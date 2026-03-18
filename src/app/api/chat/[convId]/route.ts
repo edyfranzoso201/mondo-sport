@@ -57,12 +57,10 @@ export async function POST(
         const nomeSmtp = process.env.SMTP_USER
         if (nomeSmtp && nomeSmtp !== '' && !nomeSmtp.includes('tua@')) {
           await inviaEmailNuovoMessaggio(
-            dest.email,
-            dest.alias,
-            mittente?.alias || 'Un utente',
-            testo
-          )
-        }
+  dest.email,
+  dest.alias,
+  mittente?.alias || 'Un utente'
+)      
       }
     } catch { /* ignora errori email */ }
   }
