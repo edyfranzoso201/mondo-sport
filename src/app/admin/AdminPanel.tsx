@@ -261,6 +261,8 @@ export default function AdminPanel({ pending: initialPending, approved: initialA
                       </div>
                     </div>
                   )}
+                  {/* Annunci dell'utente */}
+                  <AnnunciUtente userId={u.id} />
                 </div>
               )}
             </div>
@@ -291,5 +293,54 @@ function PuliziaButton() {
       <RefreshCw size={13} style={{ animation: loading ? 'spin 0.8s linear infinite' : 'none' }} />
       {result || (loading ? 'Pulizia...' : '🗑 Pulizia annunci scaduti')}
     </button>
+  )
+}
+
+function AnnunciUtente({ userId }: { userId: string }) {
+  const [annunci, setAnnunci] = React.useState<any[] | null>(null)
+  const [loading, setLoading] = React.useState(false)
+
+  React.useEffect(() => {
+    fetch(`/api/annunci-v2?userId=${userId}&limit=20`)
+      .then(r => r.json())
+      .then(d => setAnnunci(d.annunci || []))
+      .catch(() => setAnnunci([]))
+  }, [userId])
+
+  const elimina = async (annId: string, titolo: string) => {
+    if (!confirm(`Eliminare l'annuncio "${titolo}"?`)) return
+    setLoading(true)
+    await fetch('/api/admin/annunci', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ annId }),
+    })
+    setAnnunci(prev => prev ? prev.filter(a => a.id !== annId) : [])
+    setLoading(false)
+  }
+
+  if (!annunci) return <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 8 }}>Carico annunci...</div>
+  if (annunci.length === 0) return <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 8 }}>Nessun annuncio</div>
+
+  return (
+    <div style={{ marginTop: 12 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>
+        Annunci ({annunci.length})
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {annunci.map(ann => (
+          <div key={ann.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 10px', background: '#f9fafb', borderRadius: 8, border: '1px solid #e5e7eb' }}>
+            <div>
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{ann.titolo}</span>
+              <span style={{ fontSize: 11, color: '#9ca3af', marginLeft: 8 }}>{ann.tipo} · {ann.sport} · {ann.comune}</span>
+            </div>
+            <button onClick={() => elimina(ann.id, ann.titolo)} disabled={loading}
+              style={{ padding: '4px 10px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: 6, cursor: 'pointer', fontSize: 11, fontFamily: 'Barlow, sans-serif', fontWeight: 600 }}>
+              🗑 Elimina
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }

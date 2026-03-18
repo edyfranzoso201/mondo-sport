@@ -1,137 +1,82 @@
 import nodemailer from 'nodemailer'
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-})
+function getTransporter() {
+  // Se non ci sono variabili SMTP, usa un log silenzioso
+  if (!process.env.SMTP_HOST && !process.env.SMTP_USER) {
+    return null
+  }
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: Number(process.env.SMTP_PORT) || 587,
+    secure: false,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  })
+}
 
-export async function inviaEmailVerifica(email: string, alias: string, token: string): Promise<void> {
+export async function inviaEmailVerifica(email: string, alias: string, token: string) {
+  const transporter = getTransporter()
+  if (!transporter) { console.log(`[EMAIL] Verifica per ${alias} - token: ${token}`); return }
   const url = `${process.env.NEXTAUTH_URL}/verifica-email?token=${token}`
   await transporter.sendMail({
-    from: process.env.SMTP_FROM,
+    from: process.env.SMTP_FROM || process.env.SMTP_USER,
     to: email,
-    subject: 'Mondo Sport — Verifica il tuo indirizzo email',
-    html: `
-      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px">
-        <h1 style="color:#1a6b3a;font-size:24px;margin-bottom:8px">Mondo Sport</h1>
-        <p>Ciao <strong>${alias}</strong>,</p>
-        <p>Grazie per esserti registrato. Clicca il pulsante qui sotto per verificare la tua email:</p>
-        <a href="${url}" style="display:inline-block;background:#1a6b3a;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;margin:16px 0">
-          Verifica Email
-        </a>
-        <p style="color:#666;font-size:13px">Oppure copia e incolla questo link: <br>${url}</p>
-        <p style="color:#666;font-size:13px">Il link scade tra 24 ore. Dopo la verifica dell'email, il tuo account sarà revisionato dall'amministratore.</p>
-        <hr style="border:none;border-top:1px solid #eee;margin:24px 0">
-        <p style="color:#999;font-size:12px">Mondo Sport — La piattaforma per atleti e società sportive</p>
-      </div>
-    `,
-  })
+    subject: 'Verifica il tuo account Mondo Sport',
+    html: `<p>Ciao <strong>${alias}</strong>,</p><p>Clicca per verificare: <a href="${url}">${url}</a></p>`,
+  }).catch(e => console.error('[EMAIL] Errore verifica:', e.message))
 }
 
-export async function inviaEmailApprovazioneAdmin(
-  adminEmail: string,
-  utente: { alias: string; email: string; tipo: string; id: string }
-): Promise<void> {
-  const url = `${process.env.NEXTAUTH_URL}/admin/utenti`
+export async function inviaEmailApprovazioneAdmin(adminEmail: string, utente: any) {
+  const transporter = getTransporter()
+  if (!transporter) {
+    console.log(`[EMAIL] Nuovo utente in attesa: ${utente.alias} (${utente.email})`)
+    return
+  }
   await transporter.sendMail({
-    from: process.env.SMTP_FROM,
+    from: process.env.SMTP_FROM || process.env.SMTP_USER,
     to: adminEmail,
-    subject: `Mondo Sport — Nuova registrazione da approvare: ${utente.alias}`,
+    subject: `🏅 Mondo Sport — Nuovo utente: ${utente.alias}`,
     html: `
-      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px">
-        <h1 style="color:#1a6b3a">Nuova registrazione</h1>
-        <p>Un nuovo utente si è registrato e attende approvazione:</p>
-        <ul>
-          <li><strong>Alias:</strong> ${utente.alias}</li>
-          <li><strong>Email:</strong> ${utente.email}</li>
-          <li><strong>Tipo:</strong> ${utente.tipo}</li>
-        </ul>
-        <a href="${url}" style="display:inline-block;background:#1a6b3a;color:white;padding:12px 24px;border-radius:8px;text-decoration:none">
-          Vai al pannello admin
-        </a>
-      </div>
+      <h2>Nuovo utente in attesa di approvazione</h2>
+      <table style="border-collapse:collapse">
+        <tr><td style="padding:4px 12px 4px 0;font-weight:bold">Alias:</td><td>${utente.alias}</td></tr>
+        <tr><td style="padding:4px 12px 4px 0;font-weight:bold">Email:</td><td>${utente.email}</td></tr>
+        <tr><td style="padding:4px 12px 4px 0;font-weight:bold">Tipo:</td><td>${utente.tipo}</td></tr>
+        <tr><td style="padding:4px 12px 4px 0;font-weight:bold">Sport:</td><td>${utente.sport?.join(', ')}</td></tr>
+        <tr><td style="padding:4px 12px 4px 0;font-weight:bold">Comune:</td><td>${utente.comune}, ${utente.regione}</td></tr>
+      </table>
+      <p><a href="${process.env.NEXTAUTH_URL}/admin" style="background:#4a7c8e;color:#fff;padding:10px 20px;text-decoration:none;border-radius:6px">
+        Vai al pannello admin
+      </a></p>
     `,
-  })
+  }).catch(e => console.error('[EMAIL] Errore notifica admin:', e.message))
 }
 
-export async function inviaEmailConfermaApprovazione(email: string, alias: string): Promise<void> {
-  const url = `${process.env.NEXTAUTH_URL}/accedi`
+export async function inviaEmailApprovazione(email: string, alias: string) {
+  const transporter = getTransporter()
+  if (!transporter) { console.log(`[EMAIL] Approvato: ${alias}`); return }
   await transporter.sendMail({
-    from: process.env.SMTP_FROM,
+    from: process.env.SMTP_FROM || process.env.SMTP_USER,
     to: email,
-    subject: 'Mondo Sport — Il tuo account è stato approvato!',
-    html: `
-      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px">
-        <h1 style="color:#1a6b3a">Benvenuto su Mondo Sport!</h1>
-        <p>Ciao <strong>${alias}</strong>,</p>
-        <p>Il tuo account è stato approvato. Puoi ora accedere e contattare altri atleti e società.</p>
-        <a href="${url}" style="display:inline-block;background:#1a6b3a;color:white;padding:12px 24px;border-radius:8px;text-decoration:none">
-          Accedi ora
-        </a>
-      </div>
-    `,
-  })
+    subject: '✅ Account approvato — Mondo Sport',
+    html: `<p>Ciao <strong>${alias}</strong>, il tuo account è stato approvato!</p><p><a href="${process.env.NEXTAUTH_URL}">Accedi ora</a></p>`,
+  }).catch(e => console.error('[EMAIL] Errore approvazione:', e.message))
 }
 
-export async function inviaAlertEmail(
-  email: string,
-  alias: string,
-  profilo: { alias: string; sport: string; ruoli: string[]; comune: string }
-): Promise<void> {
-  const url = `${process.env.NEXTAUTH_URL}/annunci`
+export async function inviaNotificaChat(email: string, alias: string, mittente: string) {
+  const transporter = getTransporter()
+  if (!transporter) { console.log(`[EMAIL] Chat a ${alias} da ${mittente}`); return }
   await transporter.sendMail({
-    from: process.env.SMTP_FROM,
+    from: process.env.SMTP_FROM || process.env.SMTP_USER,
     to: email,
-    subject: `Mondo Sport — Nuovo annuncio che potrebbe interessarti`,
-    html: `
-      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px">
-        <h1 style="color:#1a6b3a">Nuovo annuncio!</h1>
-        <p>Ciao <strong>${alias}</strong>, c'è un nuovo annuncio che corrisponde ai tuoi criteri:</p>
-        <div style="border:1px solid #eee;border-radius:8px;padding:16px;margin:16px 0">
-          <p><strong>Alias:</strong> ${profilo.alias}</p>
-          <p><strong>Sport:</strong> ${profilo.sport}</p>
-          <p><strong>Ruolo:</strong> ${profilo.ruoli.join(', ')}</p>
-          <p><strong>Comune:</strong> ${profilo.comune}</p>
-        </div>
-        <a href="${url}" style="display:inline-block;background:#1a6b3a;color:white;padding:12px 24px;border-radius:8px;text-decoration:none">
-          Vedi annuncio
-        </a>
-      </div>
-    `,
-  })
+    subject: `💬 Nuovo messaggio da ${mittente} — Mondo Sport`,
+    html: `<p>Ciao <strong>${alias}</strong>, hai un nuovo messaggio da <strong>${mittente}</strong>.</p><p><a href="${process.env.NEXTAUTH_URL}/chat">Vai alla chat</a></p>`,
+  }).catch(e => console.error('[EMAIL] Errore chat:', e.message))
 }
 
-export async function inviaEmailNuovoMessaggio(
-  email: string,
-  destinatario: string,
-  mittente: string,
-  anteprima: string
-): Promise<void> {
-  const url = `${process.env.NEXTAUTH_URL}/chat`
-  await transporter.sendMail({
-    from: process.env.SMTP_FROM,
-    to: email,
-    subject: `Mondo Sport — Nuovo messaggio da ${mittente}`,
-    html: `
-      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px">
-        <h1 style="color:#4a7c8e;font-size:22px;margin-bottom:4px">Nuovo messaggio</h1>
-        <p>Ciao <strong>${destinatario}</strong>,</p>
-        <p><strong>${mittente}</strong> ti ha inviato un messaggio su Mondo Sport:</p>
-        <div style="background:#f0f7fa;border-left:4px solid #4a7c8e;padding:12px 16px;margin:16px 0;border-radius:0 8px 8px 0;font-style:italic;color:#374151">
-          "${anteprima.slice(0, 120)}${anteprima.length > 120 ? '...' : ''}"
-        </div>
-        <a href="${url}" style="display:inline-block;background:#4a7c8e;color:white;padding:11px 24px;border-radius:8px;text-decoration:none;font-weight:600">
-          Rispondi nella chat
-        </a>
-        <p style="color:#9ca3af;font-size:12px;margin-top:20px">
-          Per disattivare queste notifiche, vai su Profilo → Visibilità → Notifiche email.
-        </p>
-      </div>
-    `,
-  })
-}
+// Alias per compatibilità
+export const inviaAlertEmail = inviaNotificaChat
+export const inviaEmailNuovoMessaggio = inviaNotificaChat
+export const inviaEmailConfermaApprovazione = inviaEmailApprovazione

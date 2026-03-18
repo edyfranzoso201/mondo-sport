@@ -4,7 +4,7 @@ import {
   getUtentiPending, approvaUtente, rifiutaUtente,
   getUtente, getUtentiApproved, getAlertsUtente, getProfilo, redis,
 } from '@/lib/db'
-import { inviaEmailConfermaApprovazione, inviaAlertEmail } from '@/lib/email'
+import { inviaEmailApprovazione, inviaAlertEmail } from '@/lib/email'
 import type { AlertConfig, ProfiloPubblico, Utente } from '@/types'
 
 async function checkAdmin(req: NextRequest): Promise<Utente | null> {
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
 
   if (azione === 'approva') {
     await approvaUtente(userId)
-    try { await inviaEmailConfermaApprovazione(utente.email, utente.alias) } catch {}
+    try { await inviaEmailApprovazione(utente.email, utente.alias) } catch {}
     // Notifica alert
     try {
       const nuovoProfilo = await getProfilo(userId)
@@ -87,6 +87,22 @@ export async function DELETE(req: NextRequest) {
   const utente = await getUtente(userId)
   if (!utente) return NextResponse.json({ error: 'Utente non trovato' }, { status: 404 })
 
+  // ── Elimina tutti gli annunci dell'utente ─────────────────────────────────
+  const annunciIds = await redis.smembers(`user:annunci:${userId}`) as string[]
+  for (const annId of annunciIds) {
+    const raw = await redis.get(`annuncio:${annId}`) as any
+    if (raw) {
+      const ann = typeof raw === 'string' ? JSON.parse(raw) : raw
+      const p = redis.pipeline()
+      p.del(`annuncio:${annId}`)
+      p.srem(`ann:sport:${ann.sport}`, annId)
+      p.srem(`ann:regione:${(ann.regione || '').toLowerCase()}`, annId)
+      p.srem(`ann:tipo:${ann.tipo}`, annId)
+      p.zrem('annunci:recenti:v2', annId)
+      await p.exec()
+    }
+  }
+
   // Remove from all sets and delete all keys
   const pipe = redis.pipeline()
   pipe.srem('users:pending', userId)
@@ -98,6 +114,7 @@ export async function DELETE(req: NextRequest) {
   pipe.del(`alerts:${userId}`)
   pipe.del(`user:convs:${userId}`)
   pipe.del(`curriculum:${userId}`)
+  pipe.del(`user:annunci:${userId}`)
   // Remove from sport/region/role indexes
   utente.sport.forEach((s: string) => pipe.srem(`idx:sport:${s}`, userId))
   pipe.srem(`idx:regione:${utente.regione.toLowerCase()}`, userId)
@@ -105,5 +122,5 @@ export async function DELETE(req: NextRequest) {
   utente.categoria.forEach((c: string) => pipe.srem(`idx:cat:${c.toLowerCase()}`, userId))
   await pipe.exec()
 
-  return NextResponse.json({ success: true, message: `Utente ${utente.alias} eliminato` })
+  return NextResponse.json({ success: true, message: `Utente ${utente.alias} eliminato con ${annunciIds.length} annunci` })
 }
