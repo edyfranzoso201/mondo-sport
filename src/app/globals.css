@@ -1,0 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* ── Nuova palette azzurro-grigio canna da zucchero ── */
+  --ms-green: #4a7c8e;           /* azzurro canna da zucchero */
+  --ms-green-dark: #34606f;      /* più scuro per hover/gradient */
+  --ms-green-light: #e8f3f6;     /* sfondo tenue */
+  --ms-green-lighter: #f0f7fa;   /* sfondo ancora più leggero */
+  --ms-accent: #e8a030;          /* arancio/ambra accent */
+  --ms-accent-dark: #c07820;
+  --ms-bg: #f2f6f8;              /* bg generale leggermente azzurrato */
+  --ms-card: #ffffff;
+  --ms-border: rgba(74,124,142,0.15);
+  --ms-text: #1e2e34;
+  --ms-muted: #5c7a85;
+
+  /* Colori per tipo utente */
+  --tipo-atleta:   #4a7c8e;   /* azzurro canna da zucchero */
+  --tipo-societa:  #e8a030;   /* arancione */
+  --tipo-staff:    #7c3d9e;   /* viola */
+  --tipo-atleta-bg:  #e8f3f6;
+  --tipo-societa-bg: #fef3e2;
+  --tipo-staff-bg:   #f3eafb;
+
+  /* Sport colors aggiornati */
+  --sport-calcio: #3d7a5a;
+  --sport-pallavolo: #4a7c8e;
+  --sport-basket: #b84a0e;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  color: var(--ms-text);
+  background: var(--ms-bg);
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ── */
+.ms-layout {
+  display: grid;
+  grid-template-columns: 160px 1fr 160px;
+  min-height: calc(100vh - 56px - 56px);
+}
+@media (max-width: 1100px) {
+  .ms-layout { grid-template-columns: 110px 1fr 110px; }
+}
+@media (max-width: 768px) {
+  .ms-layout { grid-template-columns: 0 1fr 0; }
+  .ms-sidebar-ad { display: none; }
+}
+.ms-content { padding: 20px 24px; min-width: 0; }
+
+/* ── Sport accent bars ── */
+.sport-bar-calcio    { background: var(--sport-calcio); }
+.sport-bar-pallavolo { background: var(--sport-pallavolo); }
+.sport-bar-basket    { background: var(--sport-basket); }
+
+/* ── Chip / tag ── */
+.chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 20px;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.3px; text-transform: uppercase;
+}
+.chip-calcio    { background: #e3f0eb; color: #3d7a5a; }
+.chip-pallavolo { background: #e8f3f6; color: #4a7c8e; }
+.chip-basket    { background: #faeada; color: #b84a0e; }
+.chip-role      { background: #f0f4f5; color: #4a6470; border: 1px solid #d8e4e8; }
+.chip-cat       { background: #fef3e2; color: #8a5a00; }
+.chip-disponibile { background: #d8eff0; color: #2a6e78; }
+.chip-cerca       { background: #ddeaf0; color: #2a5a78; }
+
+/* ── Pulsanti ── */
+.btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 9px 20px;
+  background: var(--ms-green); color: #fff;
+  border: none; border-radius: 8px;
+  font-family: 'Barlow', sans-serif; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s, transform 0.1s;
+  text-decoration: none;
+}
+.btn-primary:hover  { background: var(--ms-green-dark); }
+.btn-primary:active { transform: scale(0.98); }
+
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 18px;
+  background: transparent; color: var(--ms-green);
+  border: 1.5px solid var(--ms-green); border-radius: 8px;
+  font-family: 'Barlow', sans-serif; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s; text-decoration: none;
+}
+.btn-secondary:hover { background: var(--ms-green-light); }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 6px 12px;
+  background: transparent; color: var(--ms-muted);
+  border: 1px solid #d8e4e8; border-radius: 6px;
+  font-size: 13px; cursor: pointer; transition: background 0.12s, color 0.12s;
+}
+.btn-ghost:hover { background: var(--ms-green-light); color: var(--ms-text); }
+
+/* ── Carte annuncio ── */
+.ms-card {
+  background: var(--ms-card);
+  border: 1px solid var(--ms-border);
+  border-radius: 12px; overflow: hidden;
+  cursor: pointer; transition: box-shadow 0.15s, transform 0.15s;
+}
+.ms-card:hover {
+  box-shadow: 0 4px 20px rgba(74,124,142,0.13);
+  transform: translateY(-2px);
+}
+
+/* ── Form inputs ── */
+.ms-input, .ms-select {
+  width: 100%; padding: 10px 14px;
+  background: #fff;
+  border: 1.5px solid #d0dde2;
+  border-radius: 8px;
+  font-family: 'Barlow', sans-serif; font-size: 14px; color: var(--ms-text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none; appearance: none;
+}
+.ms-input:focus, .ms-select:focus {
+  border-color: var(--ms-green);
+  box-shadow: 0 0 0 3px rgba(74,124,142,0.14);
+}
+.ms-input.error { border-color: #dc2626; }
+.ms-label { display: block; font-size: 13px; font-weight: 600; color: #3a5560; margin-bottom: 5px; }
+.ms-label .required { color: #dc2626; margin-left: 2px; }
+
+/* ── Avatar ── */
+.ms-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px; flex-shrink: 0;
+}
+.ms-avatar.societa { border-radius: 8px; }
+
+/* ── Background sport illustration ── */
+.sport-bg {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0;
+  opacity: 0.09;   /* aumentato da 0.04 */
+  overflow: hidden;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #b8cdd4; border-radius: 3px; }
+
+/* ── Animazioni ── */
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+.animate-in { animation: fadeIn 0.3s ease forwards; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner { animation: spin 0.8s linear infinite; }
