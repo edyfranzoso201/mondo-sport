@@ -28,12 +28,9 @@ export async function POST(req: NextRequest) {
 
     if (matching.length > 0) {
       try {
-        await inviaAlertEmail(utente.email, utente.alias, {
-          alias: nuovoProfilo.nomeSocieta || nuovoProfilo.alias,
-          sport: nuovoProfilo.sportPrimario,
-          ruoli: nuovoProfilo.ruoli,
-          comune: nuovoProfilo.comune,
-        })
+        await inviaAlertEmail(utente.email, utente.alias,
+  `${nuovoProfilo.nomeSocieta || nuovoProfilo.alias} - ${nuovoProfilo.sportPrimario} - ${nuovoProfilo.comune}`
+)
         notificati++
       } catch (e) {
         console.error(`Alert email non inviata a ${utente.email}:`, e)
