@@ -17,7 +17,6 @@ export async function POST(req: NextRequest) {
   const nuovoProfilo = await getProfilo(nuovoUserId)
   if (!nuovoProfilo) return NextResponse.json({ error: 'Profilo non trovato' }, { status: 404 })
 
-  // Recupera tutti gli utenti approvati con alert attivi
   const approvedIds = await getUtentiApproved()
   let notificati = 0
 
@@ -29,8 +28,8 @@ export async function POST(req: NextRequest) {
     if (matching.length > 0) {
       try {
         await inviaAlertEmail(utente.email, utente.alias,
-  `${nuovoProfilo.nomeSocieta || nuovoProfilo.alias} - ${nuovoProfilo.sportPrimario} - ${nuovoProfilo.comune}`
-)
+          `${nuovoProfilo.nomeSocieta || nuovoProfilo.alias} - ${nuovoProfilo.sportPrimario} - ${nuovoProfilo.comune}`
+        )
         notificati++
       } catch (e) {
         console.error(`Alert email non inviata a ${utente.email}:`, e)
