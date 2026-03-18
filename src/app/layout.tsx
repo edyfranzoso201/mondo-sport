@@ -9,7 +9,10 @@ import { auth } from '@/lib/auth'
 export const metadata: Metadata = {
   title: 'Mondo Sport — Cerca nel Mondo dello Sport',
   description: 'Cerca nel Mondo dello Sport — La piattaforma gratuita per atleti e società sportive. Trova giocatori, allenatori, preparatori atletici. Calcio, Calcio a 5, Pallavolo, Basket, Padel.',
-  keywords: 'sport, calcio, calcio a 5, pallavolo, basket, padel, squadra, atleti, allenatori, annunci sportivi, tornei, amichevoli',
+  keywords: 'sport, calcio, calcio a 5, pallavolo, basket, padel, softair, squadra, atleti, allenatori, annunci sportivi, tornei, amichevoli',
+  verification: {
+    google: 'a3ryeAw1JUmaTgwSjWBG_vsJ1nRH_5fC244vRMv_t30',
+  },
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
