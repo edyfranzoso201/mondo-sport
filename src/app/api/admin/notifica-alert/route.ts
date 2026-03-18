@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
   const nuovoProfilo = await getProfilo(nuovoUserId)
   if (!nuovoProfilo) return NextResponse.json({ error: 'Profilo non trovato' }, { status: 404 })
 
+  // Recupera tutti gli utenti approvati con alert attivi
   const approvedIds = await getUtentiApproved()
   let notificati = 0
 
