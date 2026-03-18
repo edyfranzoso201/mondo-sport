@@ -1,6 +1,6 @@
 // ─── Sport & Ruoli ────────────────────────────────────────────────────────────
 
-export type Sport = 'calcio' | 'calcio5' | 'pallavolo' | 'basket' | 'padel'
+export type Sport = 'calcio' | 'calcio5' | 'pallavolo' | 'basket' | 'padel' | 'softair'
 
 export const SPORT_LABELS: Record<Sport, string> = {
   calcio: 'Calcio',
@@ -8,6 +8,7 @@ export const SPORT_LABELS: Record<Sport, string> = {
   pallavolo: 'Pallavolo',
   basket: 'Basket',
   padel: 'Padel',
+  softair: 'Softair',
 }
 
 export const RUOLI_PER_SPORT: Record<Sport, string[]> = {
@@ -36,6 +37,12 @@ export const RUOLI_PER_SPORT: Record<Sport, string[]> = {
   padel: [
     'Lato destro', 'Lato sinistro', 'Giocatore (entrambi i lati)',
     'Istruttore / Coach', 'Allenatore', 'Team manager',
+  ],
+  softair: [
+    'Caposquadra', 'Scout', 'Incursore / Assaltatore', 'Supporto / Mitragliere',
+    'Cecchino (Sniper)', 'Spotter', 'Navigatore / Cartografo',
+    'Medico da campo', 'Geniere', 'Retroguardia', 'Freeman',
+    'Istruttore tattico', 'Team manager', 'Dirigente',
   ],
 }
 

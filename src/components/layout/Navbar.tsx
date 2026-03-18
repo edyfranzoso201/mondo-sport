@@ -41,7 +41,7 @@ export default function Navbar() {
             <path d="M14 27 Q10 21 14 14 Q18 21 14 27" fill="white" opacity="0.8"/>
           </svg>
           <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 22, fontWeight: 700, color: '#fff', letterSpacing: '-0.3px' }}>
-            MONDO SPORT
+            CERCA nel MONDO dello SPORT
           </span>
         </Link>
 

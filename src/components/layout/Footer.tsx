@@ -33,7 +33,7 @@ export default function Footer() {
                 <path d="M14 27 Q10 21 14 14 Q18 21 14 27" fill="white" opacity="0.8"/>
               </svg>
               <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 16, fontWeight: 700, color: '#fff' }}>
-                MONDO SPORT
+                CERCA nel MONDO dello SPORT
               </span>
             </div>
             <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, margin: 0, lineHeight: 1.5 }}>
