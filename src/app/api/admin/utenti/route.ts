@@ -51,12 +51,7 @@ export async function POST(req: NextRequest) {
           const match = alerts.some((a: AlertConfig) => alertMatches(a, nuovoProfilo))
           if (match) {
             try {
-              await inviaAlertEmail(u.email, u.alias, {
-                alias: nuovoProfilo.nomeSocieta || nuovoProfilo.alias,
-                sport: nuovoProfilo.sportPrimario,
-                ruoli: nuovoProfilo.ruoli,
-                comune: nuovoProfilo.comune,
-              })
+              await inviaAlertEmail(u.email, u.alias, `${nuovoProfilo.nomeSocieta || nuovoProfilo.alias} - ${nuovoProfilo.sportPrimario} - ${nuovoProfilo.comune}`)
             } catch {}
           }
         }
@@ -124,3 +119,4 @@ export async function DELETE(req: NextRequest) {
 
   return NextResponse.json({ success: true, message: `Utente ${utente.alias} eliminato con ${annunciIds.length} annunci` })
 }
+
