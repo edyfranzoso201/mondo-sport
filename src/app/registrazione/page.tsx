@@ -294,6 +294,18 @@ export default function RegistrazionePage() {
 
               <Field label="Sport praticati" required>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {tipo === 'staff' && (
+                    <button type="button" onClick={() => {
+                      if (form.sport.length === Object.keys(SPORT_LABELS).length) {
+                        upd('sport', []); upd('sportPrimario', '')
+                      } else {
+                        upd('sport', Object.keys(SPORT_LABELS)); upd('sportPrimario', 'calcio')
+                      }
+                    }}
+                      style={{ padding: '6px 16px', borderRadius: 20, border: '1.5px solid', cursor: 'pointer', fontFamily: 'Barlow, sans-serif', fontWeight: 700, fontSize: 13, borderColor: form.sport.length === Object.keys(SPORT_LABELS).length ? '#e8a030' : '#e5e7eb', background: form.sport.length === Object.keys(SPORT_LABELS).length ? '#fef3e2' : 'transparent', color: form.sport.length === Object.keys(SPORT_LABELS).length ? '#c07820' : '#6b7280' }}>
+                      {form.sport.length === Object.keys(SPORT_LABELS).length ? '✓ ' : ''}Tutti gli sport
+                    </button>
+                  )}
                   {(Object.entries(SPORT_LABELS) as [Sport, string][]).map(([v, l]) => (
                     <button key={v} type="button" onClick={() => {
                       toggleArr('sport', v)

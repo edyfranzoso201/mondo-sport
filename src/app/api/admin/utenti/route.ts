@@ -119,4 +119,3 @@ export async function DELETE(req: NextRequest) {
 
   return NextResponse.json({ success: true, message: `Utente ${utente.alias} eliminato con ${annunciIds.length} annunci` })
 }
-

@@ -17,6 +17,7 @@ export default function AdminPanel({ pending: initialPending, approved: initialA
   const [tab, setTab] = useState<'pending' | 'approved'>('pending')
   const [loading, setLoading] = useState<string | null>(null)
   const [expanded, setExpanded] = useState<string | null>(null)
+  const [tabPrincipale, setTabPrincipale] = useState<'utenti' | 'conversazioni'>('utenti')
   const [search, setSearch] = useState('')
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
 
@@ -92,6 +93,10 @@ export default function AdminPanel({ pending: initialPending, approved: initialA
         <a href="/admin/documenti" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', background: '#f0f7fa', color: '#2a5a78', borderRadius: 8, textDecoration: 'none', fontSize: 13, fontWeight: 600, border: '1px solid #b0d4e0' }}>
           📄 Gestione documenti
         </a>
+        <button onClick={() => setTabPrincipale(tabPrincipale === 'utenti' ? 'conversazioni' : 'utenti')}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', background: tabPrincipale === 'conversazioni' ? 'var(--ms-green)' : '#f0f7fa', color: tabPrincipale === 'conversazioni' ? '#fff' : '#2a5a78', borderRadius: 8, border: '1px solid #b0d4e0', cursor: 'pointer', fontSize: 13, fontWeight: 600, fontFamily: 'Barlow, sans-serif' }}>
+          💬 {tabPrincipale === 'conversazioni' ? 'Mostra utenti' : 'Conversazioni'}
+        </button>
         <PuliziaButton />
       </div>
 
@@ -341,6 +346,108 @@ function AnnunciUtente({ userId }: { userId: string }) {
           </div>
         ))}
       </div>
+    </div>
+  )
+}
+
+function ConversazioniPanel() {
+  const [conversazioni, setConversazioni] = React.useState<any[]>([])
+  const [loading, setLoading] = React.useState(true)
+  const [expanded, setExpanded] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    fetch('/api/admin/conversazioni')
+      .then(r => r.json())
+      .then(d => { setConversazioni(d.conversazioni || []); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [])
+
+  const eliminaConv = async (convId: string) => {
+    if (!confirm('Eliminare tutta la conversazione? Operazione irreversibile.')) return
+    await fetch('/api/admin/conversazioni', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ convId }),
+    })
+    setConversazioni(prev => prev.filter(c => c.id !== convId))
+  }
+
+  const eliminaMsg = async (convId: string, msgIndex: number) => {
+    if (!confirm('Eliminare questo messaggio?')) return
+    await fetch('/api/admin/conversazioni', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ convId, msgIndex }),
+    })
+    setConversazioni(prev => prev.map(c => {
+      if (c.id !== convId) return c
+      const messaggi = [...c.messaggi]
+      messaggi[msgIndex] = { ...messaggi[msgIndex], testo: '🚫 Messaggio eliminato dall\'amministratore', eliminato: true }
+      return { ...c, messaggi }
+    }))
+  }
+
+  if (loading) return <div style={{ padding: 40, textAlign: 'center', color: '#9ca3af' }}>Carico conversazioni...</div>
+  if (conversazioni.length === 0) return <div style={{ padding: 40, textAlign: 'center', color: '#9ca3af' }}>Nessuna conversazione</div>
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
+      <div style={{ fontSize: 13, color: '#6b7280', marginBottom: 4 }}>{conversazioni.length} conversazioni totali</div>
+      {conversazioni.map(conv => (
+        <div key={conv.id} style={{ background: '#fff', border: '1px solid #d0dde2', borderRadius: 12, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px' }}>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#1e2e34' }}>
+                💬 {conv.partecipanti?.map((p: any) => p.alias).join(' ↔ ')}
+              </div>
+              <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>
+                {conv.messaggi?.length || 0} messaggi · Ultimo: {conv.ultimaAttivita ? new Date(conv.ultimaAttivita).toLocaleDateString('it-IT') : '—'}
+              </div>
+              {conv.ultimoMessaggio && (
+                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2, fontStyle: 'italic' }}>
+                  "{conv.ultimoMessaggio}"
+                </div>
+              )}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={() => setExpanded(expanded === conv.id ? null : conv.id)}
+                style={{ padding: '6px 12px', background: '#f0f7fa', color: '#4a7c8e', border: '1px solid #b0d4e0', borderRadius: 8, cursor: 'pointer', fontSize: 12, fontFamily: 'Barlow, sans-serif' }}>
+                {expanded === conv.id ? 'Chiudi' : 'Vedi messaggi'}
+              </button>
+              <button onClick={() => eliminaConv(conv.id)}
+                style={{ padding: '6px 12px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: 8, cursor: 'pointer', fontSize: 12, fontFamily: 'Barlow, sans-serif' }}>
+                🗑 Elimina tutto
+              </button>
+            </div>
+          </div>
+          {expanded === conv.id && (
+            <div style={{ borderTop: '1px solid #e5e7eb', padding: '12px 16px', background: '#f9fafb', display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {(conv.messaggi || []).length === 0 ? (
+                <div style={{ fontSize: 12, color: '#9ca3af' }}>Nessun messaggio</div>
+              ) : (
+                [...(conv.messaggi || [])].reverse().map((msg: any, i: number) => {
+                  const realIndex = (conv.messaggi.length - 1) - i
+                  return (
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '8px 10px', background: msg.eliminato ? '#fff0f0' : '#fff', borderRadius: 8, border: `1px solid ${msg.eliminato ? '#fecaca' : '#e5e7eb'}` }}>
+                      <div>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#4a7c8e' }}>{msg.mittente || 'Utente'}</span>
+                        <span style={{ fontSize: 10, color: '#9ca3af', marginLeft: 8 }}>{msg.timestamp ? new Date(msg.timestamp).toLocaleString('it-IT') : ''}</span>
+                        <div style={{ fontSize: 13, color: msg.eliminato ? '#dc2626' : '#374151', marginTop: 2 }}>{msg.testo}</div>
+                      </div>
+                      {!msg.eliminato && (
+                        <button onClick={() => eliminaMsg(conv.id, realIndex)}
+                          style={{ padding: '3px 8px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: 6, cursor: 'pointer', fontSize: 10, fontFamily: 'Barlow, sans-serif', flexShrink: 0, marginLeft: 8 }}>
+                          🗑
+                        </button>
+                      )}
+                    </div>
+                  )
+                })
+              )}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   )
 }
