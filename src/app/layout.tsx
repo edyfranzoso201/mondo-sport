@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import SessionProvider from '@/components/auth/SessionProvider'
+import { SessionProvider } from '@/components/auth/SessionProvider'
 import { auth } from '@/lib/auth'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
