@@ -9,6 +9,13 @@ export async function GET(req: NextRequest) {
   const isGuest = !session?.user
   const { searchParams: p } = new URL(req.url)
 
+  // Filtro per userId specifico (usato dal pannello admin)
+  const userId = p.get('userId')
+  if (userId) {
+    const annunci = await getAnnunciUtente(userId)
+    return NextResponse.json({ annunci, total: annunci.length })
+  }
+
   const { annunci, total } = await cercaAnnunciV2({
     sport: p.get('sport') || undefined,
     ruolo: p.get('ruolo') || undefined,
