@@ -2,7 +2,7 @@ import { auth } from '@/lib/auth'
 import { cercaAnnunciV2 } from '@/lib/db'
 import AnnunciListV2 from '@/components/annunci/AnnunciListV2'
 import FiltriBarV2 from '@/components/annunci/FiltriBarV2'
-import HeroSection from '@/components/layout/HeroSection'
+import HeroSection, { SeoKeywords } from '@/components/layout/HeroSection'
 import DocumentiWidget from '@/components/layout/DocumentiWidget'
 import SidebarAd from '@/components/layout/SidebarAd'
 

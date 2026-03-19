@@ -59,3 +59,35 @@ export default function HeroSection() {
     </section>
   )
 }
+
+// Componente SEO nascosto per le keyword
+export function SeoKeywords() {
+  return (
+    <section style={{ padding: '32px 20px', background: '#f8fbfc', borderTop: '1px solid #e8f0f4' }}>
+      <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 20, fontWeight: 700, color: '#2a5a78', marginBottom: 12 }}>
+          La piattaforma sportiva gratuita per atleti e società in Italia
+        </h2>
+        <p style={{ fontSize: 14, color: '#4a6470', lineHeight: 1.7, marginBottom: 12 }}>
+          <strong>Mondo Sport</strong> è il punto di incontro tra <strong>atleti</strong> e <strong>società sportive</strong> in tutta Italia.
+          Sei un <strong>portiere di calcio</strong> che cerca squadra? Un <strong>allenatore</strong> disponibile? Una <strong>società sportiva</strong> che cerca giocatori?
+          Pubblica il tuo annuncio gratuitamente e fatti trovare.
+        </p>
+        <p style={{ fontSize: 14, color: '#4a6470', lineHeight: 1.7, marginBottom: 12 }}>
+          Organizza <strong>tornei sportivi</strong> e <strong>partite amichevoli</strong> nella tua zona. Cerca squadre disponibili per <strong>amichevoli di calcio</strong>,
+          <strong>tornei di pallavolo</strong>, <strong>tornei di basket</strong> e molto altro. Disponibile per <strong>calcio</strong>, <strong>calcio a 5</strong>, <strong>pallavolo</strong>, <strong>basket</strong>, <strong>padel</strong> e <strong>softair</strong>.
+        </p>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 16 }}>
+          {['Cerco squadra calcio', 'Organizza torneo calcio', 'Amichevole calcio', 'Cerco amichevole pallavolo',
+            'Torneo basket Italia', 'Cerco giocatori calcio a 5', 'Preparatore atletico', 'Allenatore calcio',
+            'Cerco portiere', 'Torneo under 12', 'Amichevole softball', 'Annunci sportivi gratis',
+            'Società sportiva cerca atleti', 'Staff tecnico sportivo'].map(tag => (
+            <span key={tag} style={{ padding: '4px 10px', background: '#e8f3f6', color: '#4a7c8e', borderRadius: 20, fontSize: 12, fontWeight: 500 }}>
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
