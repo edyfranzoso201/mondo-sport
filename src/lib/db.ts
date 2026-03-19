@@ -103,10 +103,21 @@ export async function approvaUtente(id: string): Promise<void> {
 }
 
 export async function rifiutaUtente(id: string): Promise<void> {
+  const utente = await getUtente(id)
   const pipe = redis.pipeline()
   pipe.srem(K.utentiPending, id)
+  pipe.srem(K.utentiApproved, id)
+  pipe.del(`user:${id}`)
+  pipe.del(`profile:${id}`)
+  if (utente) {
+    pipe.del(`user:email:${utente.email.toLowerCase()}`)
+    pipe.del(`user:alias:${utente.alias.toLowerCase()}`)
+    pipe.del(`alerts:${id}`)
+    pipe.del(`user:convs:${id}`)
+    pipe.del(`curriculum:${id}`)
+    pipe.del(`user:annunci:${id}`)
+  }
   await pipe.exec()
-  await aggiornaUtente(id, { stato: 'rejected' } as any)
 }
 
 export async function getUtentiPending(): Promise<Utente[]> {
