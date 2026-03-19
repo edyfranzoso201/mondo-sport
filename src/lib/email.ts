@@ -7,8 +7,9 @@ function getTransporter() {
   }
   return nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: Number(process.env.SMTP_PORT) || 587,
-    secure: false,
+    port: Number(process.env.SMTP_PORT) || 465,
+    secure: Number(process.env.SMTP_PORT) === 465 || !process.env.SMTP_PORT,
+    tls: { rejectUnauthorized: false },
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
