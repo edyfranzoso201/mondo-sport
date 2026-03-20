@@ -100,6 +100,8 @@ export default function MieiAnnunciClient({ annunci: initial }: { annunci: Annun
       dataInizio: ann.dataInizio,
       dataFine: ann.dataFine,
       luogo: ann.luogo,
+      piede: (ann as any).piede || '',
+      altezza: (ann as any).altezza || '',
     })
   }
 

@@ -88,8 +88,15 @@ export default function AnnunciListV2({ annunci, total, isGuest, filtriAttivi, p
           <p style={{ fontSize: 14, margin: 0 }}>Modifica i filtri o{!isGuest && <><span> </span><Link href="/annunci/nuovo" style={{ color: 'var(--ms-green)', fontWeight: 600, textDecoration: 'none' }}>crea il primo annuncio</Link></>}</p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12, marginBottom: 20 }}>
-          {annunci.map((ann, i) => <AnnuncioCard key={ann.id} ann={ann} isGuest={isGuest} onChat={() => setChatTarget(ann.autore)} delay={i * 35} />)}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20, marginBottom: 24 }}>
+          {[...annunci]
+            .sort((a, b) => {
+              // Attivi prima, non disponibili dopo
+              if (a.chiuso && !b.chiuso) return 1
+              if (!a.chiuso && b.chiuso) return -1
+              return 0
+            })
+            .map((ann, i) => <AnnuncioCard key={ann.id} ann={ann} isGuest={isGuest} onChat={() => setChatTarget(ann.autore)} delay={i * 35} />)}
         </div>
       )}
 
@@ -194,6 +201,22 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
               <span key={r} style={{ fontSize: 10, padding: '2px 7px', borderRadius: 10, background: '#f0f4f5', color: '#4a6470', border: '1px solid #d8e4e8' }}>{r}</span>
             ))}
             {ann.ruoli.length > 3 && <span style={{ fontSize: 10, color: '#9ca3af' }}>+{ann.ruoli.length - 3}</span>}
+          </div>
+        )}
+
+        {/* Info chiave: Piede e Altezza */}
+        {((ann as any).piede || (ann as any).altezza) && (
+          <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
+            {(ann as any).piede && (
+              <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: '#e8f3f6', color: '#2a6e78', border: '1px solid #b0d4e0', fontWeight: 600 }}>
+                🦶 {(ann as any).piede.charAt(0).toUpperCase() + (ann as any).piede.slice(1)}
+              </span>
+            )}
+            {(ann as any).altezza && (
+              <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: '#e8f3f6', color: '#2a6e78', border: '1px solid #b0d4e0', fontWeight: 600 }}>
+                📏 {(ann as any).altezza} cm
+              </span>
+            )}
           </div>
         )}
 

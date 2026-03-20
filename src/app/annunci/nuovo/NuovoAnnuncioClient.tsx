@@ -27,7 +27,7 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
   const [error, setError] = useState('')
   const [form, setForm] = useState<any>({
     tipo: '', titolo: '', descrizione: '', sport: '', ruoli: [], categoria: [],
-    comune: '', regione: '',
+    comune: '', regione: '', piede: '', altezza: '',
     nSquadreRicercate: '', dataInizio: '', dataFine: '', luogo: '', kmRaggio: '30',
   })
 
@@ -126,6 +126,41 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
             placeholder="Descrivi l'annuncio in dettaglio..." maxLength={500} />
           <span style={{ fontSize: 11, color: '#9ca3af', float: 'right' }}>{form.descrizione.length}/500</span>
         </div>
+
+        {/* Piede e Altezza — solo per atleti in sport con piede */}
+        {['ricerca_squadra', 'disponibilita', 'cerca_atleti'].includes(form.tipo as string) &&
+         ['calcio', 'calcio5'].includes(form.sport as string) && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div>
+              <label className="ms-label">Piede preferito</label>
+              <div style={{ display: 'flex', gap: 6 }}>
+                {[{ v: 'destro', l: '🦶 Destro' }, { v: 'sinistro', l: '🦶 Sinistro' }, { v: 'entrambi', l: '⚡ Entrambi' }].map(p => (
+                  <button key={p.v} type="button" onClick={() => upd('piede', form.piede === p.v ? '' : p.v)}
+                    style={{ flex: 1, padding: '7px 4px', borderRadius: 8, border: `1.5px solid ${form.piede === p.v ? 'var(--ms-green)' : '#d0dde2'}`, background: form.piede === p.v ? 'var(--ms-green-light)' : '#fff', color: form.piede === p.v ? 'var(--ms-green)' : '#6b7280', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'Barlow, sans-serif' }}>
+                    {form.piede === p.v ? '✓ ' : ''}{p.l}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="ms-label">Altezza (cm)</label>
+              <input type="number" className="ms-input" min={140} max={220}
+                value={form.altezza || ''} onChange={e => upd('altezza', e.target.value ? Number(e.target.value) : '')}
+                placeholder="Es. 182" />
+            </div>
+          </div>
+        )}
+
+        {/* Solo altezza per pallavolo e basket */}
+        {['ricerca_squadra', 'disponibilita', 'cerca_atleti'].includes(form.tipo as string) &&
+         ['pallavolo', 'basket'].includes(form.sport as string) && (
+          <div style={{ maxWidth: 200 }}>
+            <label className="ms-label">Altezza (cm)</label>
+            <input type="number" className="ms-input" min={140} max={220}
+              value={form.altezza || ''} onChange={e => upd('altezza', e.target.value ? Number(e.target.value) : '')}
+              placeholder="Es. 185" />
+          </div>
+        )}
 
         {/* Sport */}
         <div>

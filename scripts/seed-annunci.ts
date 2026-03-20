@@ -196,21 +196,21 @@ async function main() {
     const regione = i < 5 ? 'Piemonte' : 'Toscana'
     const ruolo = rand(SPORT_DATA.calcio.ruoli)
     const cat = rand(SPORT_DATA.calcio.categorie)
-    await creaAnnuncio({ sport: 'calcio', tipo: 'ricerca_squadra', comune, regione, ruoli: [ruolo], categoria: [cat], titolo: `${ruolo} cerca squadra ${cat} - ${comune}`, descrizione: rand(DESC_CERCA_SQUADRA), chiuso: i > 6 })
+    await creaAnnuncio({ sport: 'calcio', tipo: 'ricerca_squadra', comune, regione, ruoli: [ruolo], categoria: [cat], titolo: `${ruolo} cerca squadra ${cat} - ${comune}`, descrizione: rand(DESC_CERCA_SQUADRA), chiuso: true })
   }
   for (let i = 0; i < 10; i++) {
     const comune = i < 5 ? rand(COMUNI_PIEMONTE) : rand(COMUNI_TOSCANA)
     const regione = i < 5 ? 'Piemonte' : 'Toscana'
     const ruoli = [rand(SPORT_DATA.calcio.ruoli), rand(SPORT_DATA.calcio.ruoli)].filter((v,i,a)=>a.indexOf(v)===i)
     const cat = rand(SPORT_DATA.calcio.categorie)
-    await creaAnnuncio({ sport: 'calcio', tipo: 'cerca_atleti', comune, regione, ruoli, categoria: [cat], titolo: `Cerco ${ruoli[0]} per ${cat} - ${comune}`, descrizione: rand(DESC_CERCA_ATLETI), chiuso: i > 7, isAnnuncioSocieta: true })
+    await creaAnnuncio({ sport: 'calcio', tipo: 'cerca_atleti', comune, regione, ruoli, categoria: [cat], titolo: `Cerco ${ruoli[0]} per ${cat} - ${comune}`, descrizione: rand(DESC_CERCA_ATLETI), chiuso: true, isAnnuncioSocieta: true })
   }
   for (let i = 0; i < 10; i++) {
     const comune = i < 5 ? rand(COMUNI_PIEMONTE) : rand(COMUNI_TOSCANA)
     const regione = i < 5 ? 'Piemonte' : 'Toscana'
     const ruolo = rand(SPORT_DATA.calcio.ruoli)
     const cat = rand(SPORT_DATA.calcio.categorie)
-    await creaAnnuncio({ sport: 'calcio', tipo: 'disponibilita', comune, regione, ruoli: [ruolo], categoria: [cat], titolo: `${ruolo} disponibile ${cat} - ${comune}`, descrizione: rand(DESC_DISPONIBILE), chiuso: i > 7 })
+    await creaAnnuncio({ sport: 'calcio', tipo: 'disponibilita', comune, regione, ruoli: [ruolo], categoria: [cat], titolo: `${ruolo} disponibile ${cat} - ${comune}`, descrizione: rand(DESC_DISPONIBILE), chiuso: true })
   }
   console.log('✅ Calcio: 30 annunci')
 
@@ -222,20 +222,20 @@ async function main() {
     const regione = i < 5 ? 'Piemonte' : 'Toscana'
     const ruolo = rand(SPORT_DATA.calcio5.ruoli)
     const cat = rand(SPORT_DATA.calcio5.categorie)
-    await creaAnnuncio({ sport: 'calcio5', tipo: 'ricerca_squadra', comune, regione, ruoli: [ruolo], categoria: [cat], titolo: `${ruolo} calcio a 5 cerca squadra - ${comune}`, descrizione: rand(DESC_CERCA_SQUADRA), chiuso: i > 6 })
+    await creaAnnuncio({ sport: 'calcio5', tipo: 'ricerca_squadra', comune, regione, ruoli: [ruolo], categoria: [cat], titolo: `${ruolo} calcio a 5 cerca squadra - ${comune}`, descrizione: rand(DESC_CERCA_SQUADRA), chiuso: true })
   }
   for (let i = 0; i < 10; i++) {
     const comune = i < 5 ? rand(COMUNI_PIEMONTE) : rand(COMUNI_TOSCANA)
     const regione = i < 5 ? 'Piemonte' : 'Toscana'
     const ruoli = [rand(SPORT_DATA.calcio5.ruoli)]
     const cat = rand(SPORT_DATA.calcio5.categorie)
-    await creaAnnuncio({ sport: 'calcio5', tipo: 'cerca_atleti', comune, regione, ruoli, categoria: [cat], titolo: `Squadra calcio a 5 cerca ${ruoli[0]} - ${comune}`, descrizione: rand(DESC_CERCA_ATLETI), chiuso: i > 7, isAnnuncioSocieta: true })
+    await creaAnnuncio({ sport: 'calcio5', tipo: 'cerca_atleti', comune, regione, ruoli, categoria: [cat], titolo: `Squadra calcio a 5 cerca ${ruoli[0]} - ${comune}`, descrizione: rand(DESC_CERCA_ATLETI), chiuso: true, isAnnuncioSocieta: true })
   }
   for (let i = 0; i < 10; i++) {
     const comune = i < 5 ? rand(COMUNI_PIEMONTE) : rand(COMUNI_TOSCANA)
     const regione = i < 5 ? 'Piemonte' : 'Toscana'
     const cat = rand(SPORT_DATA.calcio5.categorie)
-    await creaAnnuncio({ sport: 'calcio5', tipo: 'amichevole', comune, regione, ruoli: [], categoria: [cat], titolo: `Amichevole calcio a 5 ${cat} - ${comune}`, descrizione: rand(DESC_AMICHEVOLE), chiuso: i > 5, isAnnuncioSocieta: true, isTorneo: false })
+    await creaAnnuncio({ sport: 'calcio5', tipo: 'amichevole', comune, regione, ruoli: [], categoria: [cat], titolo: `Amichevole calcio a 5 ${cat} - ${comune}`, descrizione: rand(DESC_AMICHEVOLE), chiuso: true, isAnnuncioSocieta: true, isTorneo: false })
   }
   console.log('✅ Calcio a 5: 30 annunci')
 
@@ -247,20 +247,20 @@ async function main() {
     const regione = i < 5 ? 'Piemonte' : 'Toscana'
     const ruolo = rand(SPORT_DATA.pallavolo.ruoli)
     const cat = rand(SPORT_DATA.pallavolo.categorie)
-    await creaAnnuncio({ sport: 'pallavolo', tipo: 'ricerca_squadra', comune, regione, ruoli: [ruolo], categoria: [cat], titolo: `${ruolo} pallavolo cerca squadra - ${comune}`, descrizione: rand(DESC_CERCA_SQUADRA), chiuso: i > 6 })
+    await creaAnnuncio({ sport: 'pallavolo', tipo: 'ricerca_squadra', comune, regione, ruoli: [ruolo], categoria: [cat], titolo: `${ruolo} pallavolo cerca squadra - ${comune}`, descrizione: rand(DESC_CERCA_SQUADRA), chiuso: true })
   }
   for (let i = 0; i < 10; i++) {
     const comune = i < 5 ? rand(COMUNI_PIEMONTE) : rand(COMUNI_TOSCANA)
     const regione = i < 5 ? 'Piemonte' : 'Toscana'
     const ruoli = [rand(SPORT_DATA.pallavolo.ruoli)]
     const cat = rand(SPORT_DATA.pallavolo.categorie)
-    await creaAnnuncio({ sport: 'pallavolo', tipo: 'cerca_atleti', comune, regione, ruoli, categoria: [cat], titolo: `ASD pallavolo cerca ${ruoli[0]} - ${comune}`, descrizione: rand(DESC_CERCA_ATLETI), chiuso: i > 7, isAnnuncioSocieta: true })
+    await creaAnnuncio({ sport: 'pallavolo', tipo: 'cerca_atleti', comune, regione, ruoli, categoria: [cat], titolo: `ASD pallavolo cerca ${ruoli[0]} - ${comune}`, descrizione: rand(DESC_CERCA_ATLETI), chiuso: true, isAnnuncioSocieta: true })
   }
   for (let i = 0; i < 10; i++) {
     const comune = i < 5 ? rand(COMUNI_PIEMONTE) : rand(COMUNI_TOSCANA)
     const regione = i < 5 ? 'Piemonte' : 'Toscana'
     const cat = rand(SPORT_DATA.pallavolo.categorie)
-    await creaAnnuncio({ sport: 'pallavolo', tipo: 'torneo', comune, regione, ruoli: [], categoria: [cat], titolo: `Torneo pallavolo ${cat} - ${comune}`, descrizione: rand(DESC_TORNEO), chiuso: i > 4, isAnnuncioSocieta: true, isTorneo: true })
+    await creaAnnuncio({ sport: 'pallavolo', tipo: 'torneo', comune, regione, ruoli: [], categoria: [cat], titolo: `Torneo pallavolo ${cat} - ${comune}`, descrizione: rand(DESC_TORNEO), chiuso: true, isAnnuncioSocieta: true, isTorneo: true })
   }
   console.log('✅ Pallavolo: 30 annunci')
 
@@ -272,20 +272,20 @@ async function main() {
     const regione = i < 5 ? 'Piemonte' : 'Toscana'
     const ruolo = rand(SPORT_DATA.basket.ruoli)
     const cat = rand(SPORT_DATA.basket.categorie)
-    await creaAnnuncio({ sport: 'basket', tipo: 'ricerca_squadra', comune, regione, ruoli: [ruolo], categoria: [cat], titolo: `${ruolo} basket cerca squadra - ${comune}`, descrizione: rand(DESC_CERCA_SQUADRA), chiuso: i > 6 })
+    await creaAnnuncio({ sport: 'basket', tipo: 'ricerca_squadra', comune, regione, ruoli: [ruolo], categoria: [cat], titolo: `${ruolo} basket cerca squadra - ${comune}`, descrizione: rand(DESC_CERCA_SQUADRA), chiuso: true })
   }
   for (let i = 0; i < 10; i++) {
     const comune = i < 5 ? rand(COMUNI_PIEMONTE) : rand(COMUNI_TOSCANA)
     const regione = i < 5 ? 'Piemonte' : 'Toscana'
     const ruoli = [rand(SPORT_DATA.basket.ruoli)]
     const cat = rand(SPORT_DATA.basket.categorie)
-    await creaAnnuncio({ sport: 'basket', tipo: 'cerca_atleti', comune, regione, ruoli, categoria: [cat], titolo: `Società basket cerca ${ruoli[0]} - ${comune}`, descrizione: rand(DESC_CERCA_ATLETI), chiuso: i > 7, isAnnuncioSocieta: true })
+    await creaAnnuncio({ sport: 'basket', tipo: 'cerca_atleti', comune, regione, ruoli, categoria: [cat], titolo: `Società basket cerca ${ruoli[0]} - ${comune}`, descrizione: rand(DESC_CERCA_ATLETI), chiuso: true, isAnnuncioSocieta: true })
   }
   for (let i = 0; i < 10; i++) {
     const comune = i < 5 ? rand(COMUNI_PIEMONTE) : rand(COMUNI_TOSCANA)
     const regione = i < 5 ? 'Piemonte' : 'Toscana'
     const cat = rand(SPORT_DATA.basket.categorie)
-    await creaAnnuncio({ sport: 'basket', tipo: 'torneo', comune, regione, ruoli: [], categoria: [cat], titolo: `Torneo basket ${cat} - ${comune}`, descrizione: rand(DESC_TORNEO), chiuso: i > 4, isAnnuncioSocieta: true, isTorneo: true })
+    await creaAnnuncio({ sport: 'basket', tipo: 'torneo', comune, regione, ruoli: [], categoria: [cat], titolo: `Torneo basket ${cat} - ${comune}`, descrizione: rand(DESC_TORNEO), chiuso: true, isAnnuncioSocieta: true, isTorneo: true })
   }
   console.log('✅ Basket: 30 annunci')
 
@@ -297,19 +297,19 @@ async function main() {
     const regione = i < 5 ? 'Piemonte' : 'Toscana'
     const ruolo = rand(SPORT_DATA.padel.ruoli)
     const cat = rand(SPORT_DATA.padel.categorie)
-    await creaAnnuncio({ sport: 'padel', tipo: 'ricerca_squadra', comune, regione, ruoli: [ruolo], categoria: [cat], titolo: `${ruolo} padel cerca partner - ${comune}`, descrizione: rand(DESC_CERCA_SQUADRA), chiuso: i > 6 })
+    await creaAnnuncio({ sport: 'padel', tipo: 'ricerca_squadra', comune, regione, ruoli: [ruolo], categoria: [cat], titolo: `${ruolo} padel cerca partner - ${comune}`, descrizione: rand(DESC_CERCA_SQUADRA), chiuso: true })
   }
   for (let i = 0; i < 10; i++) {
     const comune = i < 5 ? rand(COMUNI_PIEMONTE) : rand(COMUNI_TOSCANA)
     const regione = i < 5 ? 'Piemonte' : 'Toscana'
     const cat = rand(SPORT_DATA.padel.categorie)
-    await creaAnnuncio({ sport: 'padel', tipo: 'torneo', comune, regione, ruoli: [], categoria: [cat], titolo: `Torneo padel ${cat} - ${comune}`, descrizione: rand(DESC_TORNEO), chiuso: i > 4, isAnnuncioSocieta: true, isTorneo: true })
+    await creaAnnuncio({ sport: 'padel', tipo: 'torneo', comune, regione, ruoli: [], categoria: [cat], titolo: `Torneo padel ${cat} - ${comune}`, descrizione: rand(DESC_TORNEO), chiuso: true, isAnnuncioSocieta: true, isTorneo: true })
   }
   for (let i = 0; i < 10; i++) {
     const comune = i < 5 ? rand(COMUNI_PIEMONTE) : rand(COMUNI_TOSCANA)
     const regione = i < 5 ? 'Piemonte' : 'Toscana'
     const cat = rand(SPORT_DATA.padel.categorie)
-    await creaAnnuncio({ sport: 'padel', tipo: 'amichevole', comune, regione, ruoli: [], categoria: [cat], titolo: `Amichevole padel ${cat} - ${comune}`, descrizione: rand(DESC_AMICHEVOLE), chiuso: i > 5, isAnnuncioSocieta: true })
+    await creaAnnuncio({ sport: 'padel', tipo: 'amichevole', comune, regione, ruoli: [], categoria: [cat], titolo: `Amichevole padel ${cat} - ${comune}`, descrizione: rand(DESC_AMICHEVOLE), chiuso: true, isAnnuncioSocieta: true })
   }
   console.log('✅ Padel: 30 annunci')
 
@@ -319,7 +319,7 @@ async function main() {
   for (let i = 0; i < 3; i++) {
     const comune = rand(COMUNI_PIEMONTE)
     const ruolo = rand(SPORT_DATA.softair.ruoli)
-    await creaAnnuncio({ sport: 'softair', tipo: 'ricerca_squadra', comune, regione: 'Piemonte', ruoli: [ruolo], categoria: ['Amatori'], titolo: `${ruolo} softair cerca team - ${comune}`, descrizione: 'Operatore softair con esperienza cerca team organizzato per eventi e tornei.', chiuso: i > 1 })
+    await creaAnnuncio({ sport: 'softair', tipo: 'ricerca_squadra', comune, regione: 'Piemonte', ruoli: [ruolo], categoria: ['Amatori'], titolo: `${ruolo} softair cerca team - ${comune}`, descrizione: 'Operatore softair con esperienza cerca team organizzato per eventi e tornei.', chiuso: true })
   }
   console.log('✅ Softair: 3 annunci')
 
@@ -345,7 +345,7 @@ async function main() {
       amichevole: `Amichevole ${sport} ${cat[0]} - ${comune}`,
       torneo: `Torneo ${sport} ${cat[0]} - ${comune}`,
     }
-    await creaAnnuncio({ sport, tipo, comune, regione: 'Piemonte', ruoli, categoria: cat, titolo: titoloMap[tipo], descrizione: rand(descs), chiuso: i > 20, isAnnuncioSocieta: isSoc, isTorneo: isTorn })
+    await creaAnnuncio({ sport, tipo, comune, regione: 'Piemonte', ruoli, categoria: cat, titolo: titoloMap[tipo], descrizione: rand(descs), chiuso: true, isAnnuncioSocieta: isSoc, isTorneo: isTorn })
   }
   console.log('✅ Cintura Torino: 30 annunci extra')
 
