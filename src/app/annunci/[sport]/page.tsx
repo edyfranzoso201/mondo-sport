@@ -18,8 +18,10 @@ const SPORT_DESC: Record<string, string> = {
   softair: 'Trova team di softair, cerca operatori e organizza eventi tattici. Annunci softair in Italia.',
 }
 
-export async function generateMetadata({ params }: { params: { sport: string } }): Promise<Metadata> {
-  const sport = params.sport as Sport
+export async function generateMetadata({ params }: { params: Promise<{ sport: string }> }): Promise<Metadata> {
+  const { sport: sportParam } = await params
+  const { page: pageParam } = await searchParams
+  const sport = sportParam as Sport
   if (!SPORT_LABELS[sport]) return { title: 'Non trovato' }
   const label = SPORT_LABELS[sport]
   const icon = SPORT_ICONS[sport]
@@ -32,10 +34,12 @@ export async function generateMetadata({ params }: { params: { sport: string } }
 }
 
 export default async function SportPage({ params, searchParams }: {
-  params: { sport: string }
-  searchParams: Record<string, string>
+  params: Promise<{ sport: string }>
+  searchParams: Promise<Record<string, string>>
 }) {
-  const sport = params.sport as Sport
+  const { sport: sportParam } = await params
+  const { page: pageParam } = await searchParams
+  const sport = sportParam as Sport
   if (!SPORT_LABELS[sport]) notFound()
 
   const session = await auth()
@@ -47,7 +51,7 @@ export default async function SportPage({ params, searchParams }: {
     isAdmin = u?.tipo === 'admin'
   }
 
-  const filtri = { sport, page: Number(searchParams.page) || 1 }
+  const filtri = { sport, page: Number(pageParam) || 1 }
   const { annunci, total } = await cercaAnnunciV2(filtri, isGuest)
 
   return (

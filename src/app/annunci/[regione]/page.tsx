@@ -20,8 +20,10 @@ const REGIONE_CITTA: Record<string, string> = {
   lombardia: 'Milano, Brescia, Bergamo, Monza, Como, Varese',
 }
 
-export async function generateMetadata({ params }: { params: { regione: string } }): Promise<Metadata> {
-  const regione = params.regione.toLowerCase()
+export async function generateMetadata({ params }: { params: Promise<{ regione: string }> }): Promise<Metadata> {
+  const { regione: regioneParam } = await params
+  const { page: pageParam } = await searchParams
+  const regione = regioneParam.toLowerCase()
   const label = regione.charAt(0).toUpperCase() + regione.slice(1)
   if (!REGIONI_ITALIA.map(r => r.toLowerCase()).includes(regione)) return { title: 'Non trovato' }
   return {
@@ -33,10 +35,12 @@ export async function generateMetadata({ params }: { params: { regione: string }
 }
 
 export default async function RegionePage({ params, searchParams }: {
-  params: { regione: string }
-  searchParams: Record<string, string>
+  params: Promise<{ regione: string }>
+  searchParams: Promise<Record<string, string>>
 }) {
-  const regione = params.regione.toLowerCase()
+  const { regione: regioneParam } = await params
+  const { page: pageParam } = await searchParams
+  const regione = regioneParam.toLowerCase()
   const label = regione.charAt(0).toUpperCase() + regione.slice(1)
   if (!REGIONI_ITALIA.map(r => r.toLowerCase()).includes(regione)) notFound()
 
@@ -49,7 +53,7 @@ export default async function RegionePage({ params, searchParams }: {
     isAdmin = u?.tipo === 'admin'
   }
 
-  const filtri = { regione: label, page: Number(searchParams.page) || 1 }
+  const filtri = { regione: label, page: Number(pageParam) || 1 }
   const { annunci, total } = await cercaAnnunciV2(filtri, isGuest)
 
   return (
