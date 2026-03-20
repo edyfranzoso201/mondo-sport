@@ -86,6 +86,29 @@ export default function AnnunciListV2({ annunci, total, isGuest, isAdmin, filtri
 
   return (
     <div>
+      {/* Frase emozionale */}
+      <div style={{ textAlign: 'right', marginBottom: 8 }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: '#dc2626', fontStyle: 'italic' }}>
+          Il tuo prossimo traguardo inizia qui. Trova la squadra o il talento che cercavi.
+        </span>
+      </div>
+
+      {/* Legenda colori */}
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 12, padding: '7px 12px', background: '#f8fbfc', borderRadius: 10, border: '1px solid #e8f0f4' }}>
+        {[
+          { color: '#16a34a', label: 'Atleta cerca squadra' },
+          { color: '#2563eb', label: 'Società cerca atleti' },
+          { color: '#d97706', label: 'Coach / Staff' },
+          { color: '#7c3aed', label: 'Torneo' },
+          { color: '#ea580c', label: 'Amichevole' },
+        ].map(({ color, label }) => (
+          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <div style={{ width: 12, height: 12, borderRadius: 3, background: color, flexShrink: 0 }} />
+            <span style={{ fontSize: 10, color: '#6b7280', fontWeight: 500 }}>{label}</span>
+          </div>
+        ))}
+      </div>
+
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div>
           <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 22, fontWeight: 700, margin: 0 }}>Annunci</h2>
@@ -167,6 +190,7 @@ export default function AnnunciListV2({ annunci, total, isGuest, isAdmin, filtri
 }
 
 function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo; isGuest: boolean; onChat: () => void; delay: number }) {
+  const [hovered, setHovered] = React.useState(false)
   const sport = ann.sport
   const colors = SPORT_COLORS[sport] || SPORT_COLORS.calcio
   const tipoConf = TIPO_CONFIG[ann.tipo] || TIPO_CONFIG.ricerca_squadra
@@ -175,9 +199,40 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
   const tc = getTipoColors(tipoUtente)
   const iniziale = (ann.autore.nomeSocieta || ann.autore.alias || '?')[0].toUpperCase()
 
+  // ── Colori bordo per ruolo/tipo ───────────────────────────────────────────
+  const getBorderStyle = () => {
+    // Bordo Blu: Società che cerca atleti
+    if (ann.tipo === 'cerca_atleti') return { border: '2px solid #2563eb', topBar: 'linear-gradient(90deg, #2563eb, #60a5fa)', glow: '0 0 0 1px #bfdbfe' }
+    // Bordo Verde: Atleta che cerca squadra
+    if (ann.tipo === 'ricerca_squadra' || ann.tipo === 'disponibilita') return { border: '2px solid #16a34a', topBar: 'linear-gradient(90deg, #16a34a, #4ade80)', glow: '0 0 0 1px #bbf7d0' }
+    // Bordo Oro: Coach/Preparatore (staff)
+    if (tipoUtente === 'staff') return { border: '2px solid #d97706', topBar: 'linear-gradient(90deg, #d97706, #fbbf24)', glow: '0 0 0 1px #fde68a' }
+    // Bordo Viola: Torneo
+    if (ann.tipo === 'torneo') return { border: '2px solid #7c3aed', topBar: 'linear-gradient(90deg, #7c3aed, #a78bfa)', glow: '0 0 0 1px #ddd6fe' }
+    // Bordo Arancio: Amichevole
+    if (ann.tipo === 'amichevole' || ann.tipo === 'cerca_amichevole' || ann.tipo === 'cerca_torneo') return { border: '2px solid #ea580c', topBar: 'linear-gradient(90deg, #ea580c, #fb923c)', glow: '0 0 0 1px #fed7aa' }
+    // Default
+    return { border: `2px solid ${tc.border}`, topBar: tc.border, glow: 'none' }
+  }
+
+  const bs = getBorderStyle()
+
   return (
-    <div className="ms-card animate-in" style={{ animationDelay: `${delay}ms`, borderColor: tc.border, borderWidth: 1.5 }}>
-      <div style={{ height: 3, background: tc.border }} />
+    <div
+      className="ms-card animate-in"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        animationDelay: `${delay}ms`,
+        border: bs.border,
+        borderWidth: 2,
+        transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
+        boxShadow: hovered ? `0 8px 24px rgba(0,0,0,0.12), ${bs.glow}` : '0 1px 4px rgba(0,0,0,0.06)',
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+        position: 'relative',
+      }}>
+      {/* Barra colorata in cima */}
+      <div style={{ height: 4, background: bs.topBar, borderRadius: '10px 10px 0 0' }} />
       <div style={{ padding: '12px 14px' }}>
         {/* Tipo badge + sport */}
         <div style={{ display: 'flex', gap: 5, marginBottom: 8, flexWrap: 'wrap' }}>
@@ -277,19 +332,19 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
           </span>
           {isGuest ? (
             <Link href="/registrazione" title="Registrati per contattare"
-              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', border: '1px solid #d0dde2', borderRadius: 6, background: 'transparent', color: '#b0bec5', fontSize: 12, textDecoration: 'none' }}>
-              <Lock size={11} /> Chat
+              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 14px', border: '1.5px solid #d0dde2', borderRadius: 8, background: hovered ? '#f0f7fa' : 'transparent', color: '#4a7c8e', fontSize: 12, textDecoration: 'none', fontWeight: 600, transition: 'all 0.15s' }}>
+              <Lock size={11} /> {hovered ? '🔐 Registrati per contattare' : 'Chat'}
             </Link>
           ) : (ann as any).chiuso ? (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', border: '1px solid #f0c060', borderRadius: 6, background: '#fef3e2', color: '#c07820', fontSize: 11, fontWeight: 600 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', border: '1px solid #f0c060', borderRadius: 8, background: '#fef3e2', color: '#c07820', fontSize: 11, fontWeight: 600 }}>
               🔒 Non disponibile
             </span>
           ) : (
             <button onClick={onChat}
-              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', border: `1px solid ${tc.border}`, borderRadius: 6, background: 'transparent', color: tc.text, fontSize: 12, cursor: 'pointer', fontWeight: 600, transition: 'background 0.12s', fontFamily: 'Barlow, sans-serif' }}
-              onMouseEnter={e => (e.currentTarget.style.background = tc.bg)}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-              <MessageCircle size={12} /> Chat
+              style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 14px', border: `1.5px solid ${bs.border.split(' ')[2] || tc.border}`, borderRadius: 8, background: hovered ? (bs.topBar.includes('gradient') ? bs.topBar : tc.bg) : 'transparent', color: hovered ? '#fff' : tc.text, fontSize: 12, cursor: 'pointer', fontWeight: 700, transition: 'all 0.15s', fontFamily: 'Barlow, sans-serif' }}
+              onMouseEnter={e => { e.currentTarget.style.background = bs.topBar.includes('gradient') ? bs.topBar : tc.bg; e.currentTarget.style.color = '#fff' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = tc.text }}>
+              <MessageCircle size={13} /> {hovered ? '✉️ Contatta ora' : 'Chat'}
             </button>
           )}
         </div>
