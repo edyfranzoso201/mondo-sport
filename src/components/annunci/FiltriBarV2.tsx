@@ -5,7 +5,6 @@ import { Search, X } from 'lucide-react'
 import { SPORT_LABELS, SPORT_ICONS, RUOLI_PER_SPORT, CATEGORIE, REGIONI_ITALIA, REGIONI_ITALIA_SELECT } from '@/types'
 import type { Sport } from '@/types'
 import { cercaComune } from '@/lib/comuni'
-import type { Sport } from '@/types'
 
 interface FiltriBarV2Props {
   filtriAttivi: Record<string, any>
