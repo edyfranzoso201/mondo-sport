@@ -23,7 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const regionePages: MetadataRoute.Sitemap = REGIONI_ITALIA
     .filter(r => !r.startsWith('—'))
     .map(regione => ({
-      url: `${base}/annunci/${regione.toLowerCase()}`,
+      url: `${base}/regione/${regione.toLowerCase()}`,
       lastModified: now,
       changeFrequency: 'daily' as const,
       priority: 0.85,
