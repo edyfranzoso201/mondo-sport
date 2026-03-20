@@ -26,9 +26,12 @@ export default function HeroSection() {
         {/* Titolo su una riga + Registrazione Gratuita sotto */}
         <h1 style={{
           fontFamily: "'Barlow Condensed', sans-serif",
-          fontWeight: 700, margin: '0 0 12px', lineHeight: 1.15,
-          fontSize: 'clamp(22px, 3vw, 36px)',
-          whiteSpace: 'nowrap',
+          fontWeight: 700, margin: '0 0 12px', lineHeight: 1.2,
+          fontSize: 'clamp(18px, 4vw, 36px)',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+          overflowWrap: 'break-word',
+          padding: '0 8px',
         }}>
           <span style={{ color: '#fff' }}>
             Trova la tua squadra, le tue partite e i tuoi Tornei —{' '}

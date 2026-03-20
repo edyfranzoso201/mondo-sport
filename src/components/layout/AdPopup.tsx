@@ -76,17 +76,21 @@ export default function AdPopup() {
 
   return (
     <div style={{
-      position: 'fixed', inset: 0, zIndex: 1000,
+      position: 'fixed',
+      top: 0, left: 0, right: 0, bottom: 0,
+      zIndex: 1000,
       background: 'rgba(0,0,0,0.5)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: 20,
+      padding: '20px',
+      boxSizing: 'border-box',
       animation: 'fadeIn 0.3s ease',
     }}>
       <div style={{
         background: '#fff', borderRadius: 16, overflow: 'hidden',
-        maxWidth: 320, width: '100%',
+        width: '90%', maxWidth: 320,
         boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
         animation: 'slideUp 0.3s ease',
+        margin: '0 auto',
       }}>
         {/* Header con X */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: '1px solid #f0f0f0', background: '#f8fbfc' }}>
