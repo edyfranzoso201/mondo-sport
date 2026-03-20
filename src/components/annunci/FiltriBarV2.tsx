@@ -2,7 +2,8 @@
 import { useRouter, usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { Search, X } from 'lucide-react'
-import { SPORT_LABELS, RUOLI_PER_SPORT, CATEGORIE, REGIONI_ITALIA, REGIONI_ITALIA_SELECT } from '@/types'
+import { SPORT_LABELS, SPORT_ICONS, RUOLI_PER_SPORT, CATEGORIE, REGIONI_ITALIA, REGIONI_ITALIA_SELECT } from '@/types'
+import type { Sport } from '@/types'
 import { cercaComune } from '@/lib/comuni'
 import type { Sport } from '@/types'
 
@@ -50,6 +51,25 @@ export default function FiltriBarV2({ filtriAttivi, comuneUtente = '' }: FiltriB
 
   return (
     <div style={{ background: '#fff', borderBottom: '1px solid #d0dde2', position: 'sticky', top: 56, zIndex: 40 }}>
+      {/* Filtri rapidi sport con icone */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 20px 0', overflowX: 'auto', scrollbarWidth: 'none' }}>
+        <span style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: '0.5px', flexShrink: 0 }}>Sport:</span>
+        <button
+          onClick={() => { upd('sport', ''); applica() }}
+          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '6px 12px', borderRadius: 10, border: `2px solid ${!filtri.sport ? 'var(--ms-green)' : '#e5e7eb'}`, background: !filtri.sport ? 'var(--ms-green-light)' : '#f9fafb', cursor: 'pointer', flexShrink: 0, transition: 'all 0.15s', fontFamily: 'Barlow, sans-serif' }}>
+          <span style={{ fontSize: 20 }}>🏅</span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: !filtri.sport ? 'var(--ms-green)' : '#6b7280' }}>Tutti</span>
+        </button>
+        {(Object.entries(SPORT_LABELS) as [Sport, string][]).map(([v, l]) => (
+          <button key={v}
+            onClick={() => { upd('sport', filtri.sport === v ? '' : v); setTimeout(applica, 50) }}
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '6px 12px', borderRadius: 10, border: `2px solid ${filtri.sport === v ? 'var(--ms-green)' : '#e5e7eb'}`, background: filtri.sport === v ? 'var(--ms-green-light)' : '#f9fafb', cursor: 'pointer', flexShrink: 0, transition: 'all 0.15s', fontFamily: 'Barlow, sans-serif' }}>
+            <span style={{ fontSize: 22 }}>{SPORT_ICONS[v]}</span>
+            <span style={{ fontSize: 10, fontWeight: 600, color: filtri.sport === v ? 'var(--ms-green)' : '#6b7280', whiteSpace: 'nowrap' }}>{l}</span>
+          </button>
+        ))}
+      </div>
+
       {/* Riga 1 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', flexWrap: 'wrap' }}>
         <span style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Filtra:</span>

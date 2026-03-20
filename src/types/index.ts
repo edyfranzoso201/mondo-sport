@@ -11,6 +11,15 @@ export const SPORT_LABELS: Record<Sport, string> = {
   softair: 'Softair',
 }
 
+export const SPORT_ICONS: Record<Sport, string> = {
+  calcio: '⚽',
+  calcio5: '🥅',
+  pallavolo: '🏐',
+  basket: '🏀',
+  padel: '🎾',
+  softair: '🎯',
+}
+
 export const RUOLI_PER_SPORT: Record<Sport, string[]> = {
   calcio: [
     'Portiere', 'Terzino destro', 'Terzino sinistro', 'Difensore centrale',

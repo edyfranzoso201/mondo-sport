@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { MessageCircle, Lock, MapPin, ChevronLeft, ChevronRight, Bell, Plus, Trophy, Handshake, Users, Calendar } from 'lucide-react'
 import type { AnnuncioConProfilo } from '@/types'
 import { getTipoColors, TIPO_LABEL } from '@/lib/tipoColors'
-import { SPORT_LABELS } from '@/types'
+import { SPORT_LABELS, SPORT_ICONS } from '@/types'
 import type { Sport } from '@/types'
 import ChatModal from '@/components/chat/ChatModal'
 import AlertModal from '@/components/chat/AlertModal'
@@ -240,6 +240,7 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
             {tipoConf.icon} {tipoConf.label}
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 10, textTransform: 'uppercase', background: colors.bg, color: colors.text }}>
+            {SPORT_ICONS[sport as keyof typeof SPORT_ICONS]}
             {SPORT_LABELS[sport] || sport}
           </span>
 
@@ -251,7 +252,7 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
         </div>
 
         {/* Titolo */}
-        <h3 style={{ fontSize: 14, fontWeight: 700, margin: '0 0 6px', lineHeight: 1.3, color: '#1e2e34', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <h3 style={{ fontSize: 15, fontWeight: 800, margin: '0 0 6px', lineHeight: 1.3, color: '#1e3a8a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: '0.2px' }}>
           {ann.titolo}
         </h3>
 
@@ -281,7 +282,7 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
 
         {/* Descrizione */}
         {ann.descrizione && (
-          <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 8px', lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: '#1e3a8a', margin: '0 0 8px', lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>
             {ann.descrizione}
           </p>
         )}
