@@ -129,12 +129,7 @@ export default function FiltriBarV2({ filtriAttivi, comuneUtente = '' }: FiltriB
           )}
         </div>
 
-        {/* Ruolo */}
-        <select className="ms-select" style={{ ...sel, minWidth: 150 }} value={filtri.ruolo || ''}
-          onChange={e => upd('ruolo', e.target.value)} disabled={!filtri.sport}>
-          <option value="">{filtri.sport ? 'Tutti i ruoli' : 'Prima sport'}</option>
-          {ruoliDisp.map(r => <option key={r} value={r}>{r}</option>)}
-        </select>
+
 
         {/* Regione */}
         <select className="ms-select" style={sel} value={filtri.regione || ''}

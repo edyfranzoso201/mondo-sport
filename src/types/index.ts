@@ -61,7 +61,7 @@ export const CATEGORIE = [
 ]
 
 export const REGIONI_ITALIA = [
-  'Piemonte', 'Toscana',
+  'Lombardia', 'Piemonte', 'Toscana',
   // Altre regioni in arrivo...
 ]
 
