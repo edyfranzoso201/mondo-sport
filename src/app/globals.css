@@ -57,6 +57,10 @@ body {
 }
 .ms-content { padding: 20px 24px; min-width: 0; }
 
+/* ── Popup animations ── */
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+
 /* ── Sport accent bars ── */
 .sport-bar-calcio    { background: var(--sport-calcio); }
 .sport-bar-pallavolo { background: var(--sport-pallavolo); }
