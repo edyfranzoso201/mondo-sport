@@ -87,9 +87,10 @@ export default function AnnunciListV2({ annunci, total, isGuest, isAdmin, filtri
   return (
     <div>
       {/* Frase emozionale */}
-      <div style={{ textAlign: 'center', marginBottom: 16, padding: '14px 20px', background: 'linear-gradient(135deg, #fff5f5 0%, #fff 100%)', borderRadius: 12, border: '1.5px solid #fecaca' }}>
-        <span style={{ fontSize: 20, fontWeight: 800, color: '#dc2626', fontStyle: 'italic', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: '0.3px', lineHeight: 1.3 }}>
-          Il tuo prossimo traguardo inizia qui.<br />Trova la squadra o il talento che cercavi !!!!!!
+      <div style={{ textAlign: 'center', marginBottom: 16, padding: '12px 16px', background: 'linear-gradient(135deg, #fff5f5 0%, #fff 100%)', borderRadius: 12, border: '1.5px solid #fecaca', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+        <span style={{ fontSize: 'clamp(14px, 4vw, 20px)', fontWeight: 800, color: '#dc2626', fontStyle: 'italic', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: '0.3px', lineHeight: 1.4, display: 'block' }}>
+          Il tuo prossimo traguardo inizia qui.
+          <br />Trova la squadra o il talento che cercavi !!!!!!
         </span>
       </div>
 
