@@ -10,37 +10,37 @@ import SidebarAd from '@/components/layout/SidebarAd'
 import DocumentiWidget from '@/components/layout/DocumentiWidget'
 
 const SPORT_DESC: Record<string, string> = {
-  calcio: 'Trova squadre di calcio, portieri, difensori, centrocampisti e attaccanti. Annunci per tornei e amichevoli di calcio in tutta Italia.',
-  calcio5: 'Annunci calcio a 5: cerca squadre, pivot, ali e portieri. Organizza tornei e amichevoli di calcio a 5.',
-  pallavolo: 'Trova squadre di pallavolo, palleggiatori, schiacciatori e liberi. Tornei e amichevoli di pallavolo in Italia.',
-  basket: 'Annunci basket: cerca squadre, playmaker, ali e centri. Organizza tornei e amichevoli di basket.',
-  padel: 'Trova partner di padel, organizza tornei e amichevoli. Annunci per giocatori e istruttori di padel.',
-  softair: 'Trova team di softair, cerca operatori e organizza eventi tattici. Annunci softair in Italia.',
+  calcio: 'Trova squadre di calcio, portieri, difensori e attaccanti. Annunci per tornei e amichevoli in Italia.',
+  calcio5: 'Annunci calcio a 5: cerca squadre, pivot, ali e portieri. Organizza tornei e amichevoli.',
+  pallavolo: 'Trova squadre di pallavolo, palleggiatori, schiacciatori e liberi. Tornei in Italia.',
+  basket: 'Annunci basket: cerca squadre, playmaker, ali e centri. Organizza tornei e amichevoli.',
+  padel: 'Trova partner di padel, organizza tornei e amichevoli. Annunci per giocatori e istruttori.',
+  softair: 'Trova team di softair, cerca operatori e organizza eventi tattici in Italia.',
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ sport: string }> }): Promise<Metadata> {
-  const { sport: sportParam } = await params
-  const { page: pageParam } = await searchParams
-  const sport = sportParam as Sport
-  if (!SPORT_LABELS[sport]) return { title: 'Non trovato' }
-  const label = SPORT_LABELS[sport]
-  const icon = SPORT_ICONS[sport]
+type Props = {
+  params: Promise<{ sport: string }>
+  searchParams: Promise<Record<string, string>>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const p = await params
+  const sport = p.sport
+  const label = SPORT_LABELS[sport as Sport]
+  if (!label) return { title: 'Non trovato' }
   return {
-    title: `${icon} Annunci ${label} Italia — Cerca squadra e tornei | Mondo Sport`,
-    description: SPORT_DESC[sport] || `Annunci ${label} in Italia. Trova squadre e atleti su Mondo Sport.`,
-    keywords: `annunci ${label.toLowerCase()}, cerco squadra ${label.toLowerCase()}, tornei ${label.toLowerCase()}, amichevoli ${label.toLowerCase()} Italia`,
+    title: `${SPORT_ICONS[sport as Sport]} Annunci ${label} Italia | Mondo Sport`,
+    description: SPORT_DESC[sport] || `Annunci ${label} in Italia.`,
     alternates: { canonical: `https://mondo-sport.vercel.app/annunci/${sport}` },
   }
 }
 
-export default async function SportPage({ params, searchParams }: {
-  params: Promise<{ sport: string }>
-  searchParams: Promise<Record<string, string>>
-}) {
-  const { sport: sportParam } = await params
-  const { page: pageParam } = await searchParams
-  const sport = sportParam as Sport
-  if (!SPORT_LABELS[sport]) notFound()
+export default async function SportPage({ params, searchParams }: Props) {
+  const p = await params
+  const sp = await searchParams
+  const sport = p.sport
+
+  if (!SPORT_LABELS[sport as Sport]) notFound()
 
   const session = await auth()
   const isGuest = !session?.user
@@ -51,18 +51,16 @@ export default async function SportPage({ params, searchParams }: {
     isAdmin = u?.tipo === 'admin'
   }
 
-  const filtri = { sport, page: Number(pageParam) || 1 }
+  const filtri = { sport: sport as Sport, page: Number(sp.page) || 1 }
   const { annunci, total } = await cercaAnnunciV2(filtri, isGuest)
 
   return (
     <main style={{ background: 'var(--ms-bg)', minHeight: '100vh' }}>
       <div style={{ background: 'var(--ms-green)', padding: '16px 20px', textAlign: 'center' }}>
         <h1 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 28, fontWeight: 800, color: '#fff', margin: 0 }}>
-          {SPORT_ICONS[sport]} Annunci {SPORT_LABELS[sport]} in Italia
+          {SPORT_ICONS[sport as Sport]} Annunci {SPORT_LABELS[sport as Sport]} in Italia
         </h1>
-        <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, margin: '6px 0 0' }}>
-          {SPORT_DESC[sport]}
-        </p>
+        <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, margin: '6px 0 0' }}>{SPORT_DESC[sport]}</p>
       </div>
       <FiltriBarV2 filtriAttivi={filtri} />
       <div className="ms-layout">

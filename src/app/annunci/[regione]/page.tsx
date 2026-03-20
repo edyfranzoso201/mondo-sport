@@ -9,39 +9,34 @@ import SidebarAd from '@/components/layout/SidebarAd'
 import DocumentiWidget from '@/components/layout/DocumentiWidget'
 
 const REGIONE_DESC: Record<string, string> = {
-  piemonte: 'Annunci sportivi in Piemonte: trova squadre, atleti e tornei a Torino, Grugliasco, Collegno, Rivoli e in tutta la regione.',
-  toscana: 'Annunci sportivi in Toscana: trova squadre, atleti e tornei a Firenze, Prato, Livorno e in tutta la regione.',
-  lombardia: 'Annunci sportivi in Lombardia: trova squadre, atleti e tornei a Milano, Brescia, Bergamo e in tutta la regione.',
+  piemonte: 'Annunci sportivi in Piemonte: trova squadre, atleti e tornei a Torino, Grugliasco, Collegno, Rivoli.',
+  toscana: 'Annunci sportivi in Toscana: trova squadre, atleti e tornei a Firenze, Prato, Livorno.',
+  lombardia: 'Annunci sportivi in Lombardia: trova squadre, atleti e tornei a Milano, Brescia, Bergamo.',
 }
 
-const REGIONE_CITTA: Record<string, string> = {
-  piemonte: 'Torino, Grugliasco, Collegno, Rivoli, Nichelino, Moncalieri',
-  toscana: 'Firenze, Prato, Livorno, Siena, Arezzo, Lucca',
-  lombardia: 'Milano, Brescia, Bergamo, Monza, Como, Varese',
+type Props = {
+  params: Promise<{ regione: string }>
+  searchParams: Promise<Record<string, string>>
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ regione: string }> }): Promise<Metadata> {
-  const { regione: regioneParam } = await params
-  const { page: pageParam } = await searchParams
-  const regione = regioneParam.toLowerCase()
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const p = await params
+  const regione = p.regione.toLowerCase()
   const label = regione.charAt(0).toUpperCase() + regione.slice(1)
   if (!REGIONI_ITALIA.map(r => r.toLowerCase()).includes(regione)) return { title: 'Non trovato' }
   return {
-    title: `Annunci Sportivi ${label} — Squadre, Atleti e Tornei | Mondo Sport`,
-    description: REGIONE_DESC[regione] || `Annunci sportivi in ${label}. Trova squadre, atleti e organizza tornei su Mondo Sport.`,
-    keywords: `annunci sportivi ${label}, cerco squadra ${label}, tornei ${label}, sport ${label}, ${REGIONE_CITTA[regione] || ''}`,
+    title: `Annunci Sportivi ${label} — Squadre e Tornei | Mondo Sport`,
+    description: REGIONE_DESC[regione] || `Annunci sportivi in ${label}.`,
     alternates: { canonical: `https://mondo-sport.vercel.app/annunci/${regione}` },
   }
 }
 
-export default async function RegionePage({ params, searchParams }: {
-  params: Promise<{ regione: string }>
-  searchParams: Promise<Record<string, string>>
-}) {
-  const { regione: regioneParam } = await params
-  const { page: pageParam } = await searchParams
-  const regione = regioneParam.toLowerCase()
+export default async function RegionePage({ params, searchParams }: Props) {
+  const p = await params
+  const sp = await searchParams
+  const regione = p.regione.toLowerCase()
   const label = regione.charAt(0).toUpperCase() + regione.slice(1)
+
   if (!REGIONI_ITALIA.map(r => r.toLowerCase()).includes(regione)) notFound()
 
   const session = await auth()
@@ -53,7 +48,7 @@ export default async function RegionePage({ params, searchParams }: {
     isAdmin = u?.tipo === 'admin'
   }
 
-  const filtri = { regione: label, page: Number(pageParam) || 1 }
+  const filtri = { regione: label, page: Number(sp.page) || 1 }
   const { annunci, total } = await cercaAnnunciV2(filtri, isGuest)
 
   return (
@@ -65,11 +60,6 @@ export default async function RegionePage({ params, searchParams }: {
         <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, margin: '6px 0 0' }}>
           {REGIONE_DESC[regione] || `Trova squadre, atleti e tornei in ${label}`}
         </p>
-        {REGIONE_CITTA[regione] && (
-          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, margin: '4px 0 0' }}>
-            {REGIONE_CITTA[regione]}
-          </p>
-        )}
       </div>
       <FiltriBarV2 filtriAttivi={filtri} />
       <div className="ms-layout">
@@ -85,7 +75,5 @@ export default async function RegionePage({ params, searchParams }: {
 }
 
 export async function generateStaticParams() {
-  return REGIONI_ITALIA
-    .filter(r => !r.startsWith('—'))
-    .map(r => ({ regione: r.toLowerCase() }))
+  return REGIONI_ITALIA.filter(r => !r.startsWith('—')).map(r => ({ regione: r.toLowerCase() }))
 }
