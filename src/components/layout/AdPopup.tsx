@@ -34,10 +34,19 @@ export default function AdPopup() {
       try {
         const res = await fetch('/api/pubblicita')
         const data = await res.json()
-        const slots = data.slots || []
-        const s = slots.find((s: any) => s.id === slotId && s.tipo !== 'vuoto' && s.attivo)
-        if (s) {
-          setSlot(s)
+        const slots = data.data || []
+        const attivi = slots.filter((s: any) => s.tipo !== 'vuoto' && s.attivo)
+        if (attivi.length > 0) {
+          const s = attivi[Math.floor(Math.random() * attivi.length)]
+          setSlot({
+            tipo: s.tipo,
+            titolo: s.titolo,
+            sottotitolo: s.sottotitolo,
+            url: s.urlEsterno || (s.paginaInterna ? `/${s.paginaInterna}` : undefined),
+            urlImmagine: s.immagineUrl,
+            colore: s.coloresfondo,
+            nuovaScheda: s.apriNuovaTab,
+          })
           setVisible(true)
         }
       } catch {}
