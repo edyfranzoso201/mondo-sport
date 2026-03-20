@@ -29,10 +29,12 @@ export default async function HomePage({
 
   // Comune utente loggato (per filtro km)
   let comuneUtente = ''
+  let isAdmin = false
   if (session?.user) {
     const { getUtente } = await import('@/lib/db')
     const u = await getUtente(session.user.id!)
     comuneUtente = u?.comune || ''
+    isAdmin = u?.tipo === 'admin'
   }
 
   const { annunci, total } = await cercaAnnunciV2(filtri, isGuest)
@@ -49,6 +51,7 @@ export default async function HomePage({
             annunci={annunci}
             total={total}
             isGuest={isGuest}
+            isAdmin={isAdmin}
             filtriAttivi={filtri}
             page={filtri.page}
           />

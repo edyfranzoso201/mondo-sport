@@ -1,4 +1,5 @@
 'use client'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { MessageCircle, Lock, MapPin, ChevronLeft, ChevronRight, Bell, Plus, Trophy, Handshake, Users, Calendar } from 'lucide-react'
@@ -8,12 +9,13 @@ import { SPORT_LABELS } from '@/types'
 import type { Sport } from '@/types'
 import ChatModal from '@/components/chat/ChatModal'
 import AlertModal from '@/components/chat/AlertModal'
-import { useState } from 'react'
+
 
 interface Props {
   annunci: AnnuncioConProfilo[]
   total: number
   isGuest: boolean
+  isAdmin?: boolean
   filtriAttivi: Record<string, any>
   page: number
 }
@@ -42,10 +44,34 @@ const LIVELLO_CONFIG: Record<string, { label: string; color: string }> = {
   alto:  { label: 'Alto',   color: '#dc2626' },
 }
 
-export default function AnnunciListV2({ annunci, total, isGuest, filtriAttivi, page }: Props) {
+export default function AnnunciListV2({ annunci, total, isGuest, isAdmin, filtriAttivi, page }: Props) {
   const router = useRouter()
   const [chatTarget, setChatTarget] = useState<any>(null)
   const [alertOpen, setAlertOpen] = useState(false)
+  const [nuoviAnnunci, setNuoviAnnunci] = useState<AnnuncioConProfilo[]>([])
+  const [annunciList, setAnnunciList] = useState(annunci)
+
+  // Carica ultimi annunci (slider top)
+  React.useEffect(() => {
+    fetch('/api/annunci-v2/ultimi')
+      .then(r => r.json())
+      .then(d => setNuoviAnnunci(d.annunci || []))
+      .catch(() => {})
+  }, [])
+
+  const eliminaAnnuncioAdmin = async (annId: string, titolo: string) => {
+    if (!confirm(`Eliminare l'annuncio "${titolo}"?`)) return
+    if (!confirm('Conferma definitiva: questa operazione è IRREVERSIBILE.')) return
+    const res = await fetch('/api/admin/annunci', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ annId }),
+    })
+    if (res.ok) {
+      setAnnunciList(prev => prev.filter(a => a.id !== annId))
+      setNuoviAnnunci(prev => prev.filter(a => a.id !== annId))
+    }
+  }
   const limit = isGuest ? 10 : 20
   const totalPages = Math.ceil(total / limit)
 
@@ -91,12 +117,23 @@ export default function AnnunciListV2({ annunci, total, isGuest, filtriAttivi, p
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20, marginBottom: 24 }}>
           {[...annunci]
             .sort((a, b) => {
-              // Attivi prima, non disponibili dopo
               if (a.chiuso && !b.chiuso) return 1
               if (!a.chiuso && b.chiuso) return -1
               return 0
             })
-            .map((ann, i) => <AnnuncioCard key={ann.id} ann={ann} isGuest={isGuest} onChat={() => setChatTarget(ann.autore)} delay={i * 35} />)}
+            .map((ann, i) => (
+              <div key={ann.id} style={{ position: 'relative' }}>
+                {isAdmin && (
+                  <button
+                    onClick={() => eliminaAnnuncioAdmin(ann.id, ann.titolo)}
+                    title="Elimina annuncio"
+                    style={{ position: 'absolute', top: 8, right: 8, zIndex: 10, padding: '3px 8px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 10, fontWeight: 700, fontFamily: 'Barlow, sans-serif' }}>
+                    🗑 Elimina
+                  </button>
+                )}
+                <AnnuncioCard ann={ann} isGuest={isGuest} onChat={() => setChatTarget(ann.autore)} delay={i * 35} />
+              </div>
+            ))}
         </div>
       )}
 
