@@ -3,7 +3,6 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { Search, X } from 'lucide-react'
 import { SPORT_LABELS, SPORT_ICONS, RUOLI_PER_SPORT, CATEGORIE, REGIONI_ITALIA, REGIONI_ITALIA_SELECT } from '@/types'
-import type { Sport } from '@/types'
 import { cercaComune } from '@/lib/comuni'
 import type { Sport } from '@/types'
 
@@ -201,3 +200,4 @@ function Pill({ label, onRemove }: { label: string; onRemove: () => void }) {
     </span>
   )
 }
+
