@@ -145,7 +145,7 @@ export async function cercaAnnunci(
   filtri: FiltriRicerca,
   isGuest = false
 ): Promise<{ profili: ProfiloPubblico[]; total: number }> {
-  const limit = isGuest ? 10 : (filtri.limit || 20)
+  const limit = filtri.limit || 20
   const page = filtri.page || 1
 
   let candidati: string[]
@@ -403,7 +403,7 @@ export async function cercaAnnunciV2(
   filtri: FiltriAnnunci,
   isGuest = false
 ): Promise<{ annunci: AnnuncioConProfilo[]; total: number }> {
-  const limit = isGuest ? 10 : (filtri.limit || 20)
+  const limit = filtri.limit || 20
   const page = filtri.page || 1
 
   // Recupera tutti gli ID in ordine (più recenti prima)

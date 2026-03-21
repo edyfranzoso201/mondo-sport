@@ -72,7 +72,7 @@ export default function AnnunciListV2({ annunci, total, isGuest, isAdmin, filtri
       setNuoviAnnunci(prev => prev.filter(a => a.id !== annId))
     }
   }
-  const limit = isGuest ? 10 : 20
+  const limit = 20
   const totalPages = Math.ceil(total / limit)
 
   const goPage = (p: number) => {
@@ -113,7 +113,7 @@ export default function AnnunciListV2({ annunci, total, isGuest, isAdmin, filtri
         <div>
           <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 22, fontWeight: 700, margin: 0 }}>Annunci</h2>
           <p style={{ fontSize: 13, color: '#6b7280', margin: '2px 0 0' }}>
-            {isGuest ? `Ultimi 10 — registrati per vedere tutti i ${total}` : `${total} annunci`}
+            {`${total} annunci`}
           </p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -160,19 +160,9 @@ export default function AnnunciListV2({ annunci, total, isGuest, isAdmin, filtri
         </div>
       )}
 
-      {isGuest && (
-        <div style={{ background: 'linear-gradient(135deg, var(--ms-green) 0%, var(--ms-green-dark) 100%)', borderRadius: 12, padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 12 }}>
-          <div>
-            <p style={{ color: '#fff', fontWeight: 700, margin: 0, fontSize: 15 }}>🎉 Registrazione gratuita</p>
-            <p style={{ color: 'rgba(255,255,255,0.75)', margin: '4px 0 0', fontSize: 13 }}>Vedi tutti gli annunci e contatta direttamente atleti e società.</p>
-          </div>
-          <Link href="/registrazione" style={{ background: 'var(--ms-accent)', color: '#1a1200', padding: '10px 20px', borderRadius: 8, textDecoration: 'none', fontWeight: 800, fontSize: 14, whiteSpace: 'nowrap' }}>
-            È Gratis! →
-          </Link>
-        </div>
-      )}
 
-      {!isGuest && totalPages > 1 && (
+
+      {totalPages > 1 && (
         <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 24, alignItems: 'center' }}>
           <button className="btn-ghost" onClick={() => goPage(page - 1)} disabled={page === 1}><ChevronLeft size={16} /></button>
           {[...Array(Math.min(totalPages, 7))].map((_, i) => {
