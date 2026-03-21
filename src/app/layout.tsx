@@ -4,7 +4,7 @@ import SessionProvider from '@/components/auth/SessionProvider'
 import { auth } from '@/lib/auth'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
-import AdPopup from '@/components/layout/AdPopup'
+// import AdPopup from '@/components/layout/AdPopup'
 
 export const metadata: Metadata = {
   title: 'Mondo Sport — Cerca nel Mondo dello Sport',
@@ -81,7 +81,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Navbar />
           <main>{children}</main>
           <Footer />
-          <AdPopup />
+          {/* <AdPopup /> */}
         </SessionProvider>
       </body>
     </html>

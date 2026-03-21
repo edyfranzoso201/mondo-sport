@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { Search, X } from 'lucide-react'
@@ -44,7 +45,13 @@ export default function FiltriBarV2({ filtriAttivi, comuneUtente = '' }: FiltriB
 
   const resetta = () => { setFiltri({ page: 1 }); router.push(pathname) }
   const haFiltri = Object.entries(filtri).some(([k, v]) => v && k !== 'page' && k !== 'limit')
-  const ruoliDisp = filtri.sport ? RUOLI_PER_SPORT[filtri.sport as Sport] || [] : []
+  const [ruoliDinamici, setRuoliDinamici] = useState<Record<string, string[]>>(RUOLI_PER_SPORT)
+
+  React.useEffect(() => {
+    fetch('/api/ruoli').then(r => r.json()).then(d => { if (d.ruoli) setRuoliDinamici(d.ruoli) }).catch(() => {})
+  }, [])
+
+  const ruoliDisp = filtri.sport ? (ruoliDinamici[filtri.sport as Sport] || RUOLI_PER_SPORT[filtri.sport as Sport] || []) : []
 
 
   const sel: React.CSSProperties = { width: 'auto', minWidth: 120, padding: '7px 12px', fontSize: 13, height: 36 }

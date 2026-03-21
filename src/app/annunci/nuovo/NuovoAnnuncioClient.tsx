@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Send, Loader2, Check, Plus, X } from 'lucide-react'
@@ -63,7 +63,13 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
     setLoading(false)
   }
 
-  const ruoliDisp = form.sport ? RUOLI_PER_SPORT[form.sport as Sport] || [] : []
+  const [ruoliDinamici, setRuoliDinamici] = useState<Record<string, string[]>>(RUOLI_PER_SPORT)
+
+  useEffect(() => {
+    fetch('/api/ruoli').then(r => r.json()).then(d => { if (d.ruoli) setRuoliDinamici(d.ruoli) }).catch(() => {})
+  }, [])
+
+  const ruoliDisp = form.sport ? (ruoliDinamici[form.sport as Sport] || RUOLI_PER_SPORT[form.sport as Sport] || []) : []
 
   if (success) return (
     <div style={{ minHeight: 'calc(100vh - 56px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
