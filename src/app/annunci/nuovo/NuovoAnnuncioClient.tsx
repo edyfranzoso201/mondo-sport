@@ -9,15 +9,19 @@ import type { Sport, TipoAnnuncio } from '@/types'
 interface Props { userId: string; userTipo: string }
 
 const TIPI_BASE: { v: TipoAnnuncio; l: string; desc: string; icon: string }[] = [
-  { v: 'ricerca_squadra', l: 'Cerco squadra',    desc: 'Sei un atleta che vuole trovare una squadra', icon: '🔍' },
-  { v: 'disponibilita',   l: 'Sono disponibile', desc: 'Offri la tua disponibilità a squadre e società', icon: '✋' },
+  { v: 'ricerca_squadra',       l: 'Cerco squadra',           desc: 'Sei un atleta che vuole trovare una squadra', icon: '🔍' },
+  { v: 'disponibilita',         l: 'Sono disponibile',        desc: 'Offri la tua disponibilità a squadre e società', icon: '✋' },
+  { v: 'cerca_sponsor',         l: 'Cerca Sponsor',           desc: 'Cerchi uno sponsor per la tua attività sportiva', icon: '🤝' },
+  { v: 'offre_sponsorizzazione', l: 'Offre Sponsorizzazione', desc: 'Sei un\'azienda e vuoi sponsorizzare squadre sportive', icon: '💼' },
 ]
 const TIPI_SOCIETA: { v: TipoAnnuncio; l: string; desc: string; icon: string }[] = [
-  { v: 'cerca_atleti',     l: 'Cerco atleti',          desc: 'La società cerca giocatori, allenatori o staff', icon: '🔎' },
-  { v: 'torneo',           l: 'Organizza torneo',       desc: 'Organizzi un torneo e cerchi squadre partecipanti', icon: '🏆' },
-  { v: 'amichevole',       l: 'Organizza amichevole',   desc: 'Cerchi squadre per partite amichevoli', icon: '🤝' },
-  { v: 'cerca_torneo',     l: 'Cerco torneo',           desc: 'Vuoi iscrivere la tua squadra ad un torneo', icon: '🔍' },
-  { v: 'cerca_amichevole', l: 'Cerco amichevole',       desc: 'Cerchi avversari per partite amichevoli', icon: '🤝' },
+  { v: 'cerca_atleti',          l: 'Cerco atleti',            desc: 'La società cerca giocatori, allenatori o staff', icon: '🔎' },
+  { v: 'torneo',                l: 'Organizza torneo',        desc: 'Organizzi un torneo e cerchi squadre partecipanti', icon: '🏆' },
+  { v: 'amichevole',            l: 'Organizza amichevole',    desc: 'Cerchi squadre per partite amichevoli', icon: '🤝' },
+  { v: 'cerca_torneo',          l: 'Cerco torneo',            desc: 'Vuoi iscrivere la tua squadra ad un torneo', icon: '🔍' },
+  { v: 'cerca_amichevole',      l: 'Cerco amichevole',        desc: 'Cerchi avversari per partite amichevoli', icon: '🤝' },
+  { v: 'cerca_sponsor',         l: 'Cerca Sponsor',           desc: 'La società cerca uno sponsor commerciale', icon: '🤝' },
+  { v: 'offre_sponsorizzazione', l: 'Offre Sponsorizzazione', desc: 'Sei un\'azienda e vuoi sponsorizzare squadre sportive', icon: '💼' },
 ]
 
 export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
