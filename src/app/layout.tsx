@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     description: 'Trova squadre, giocatori e tornei sportivi in Italia.',
   },
   verification: {
-    google: 'a3ryeAw1JUmaTgwSjWBG_vsJ1nRH_5fC244vRMv_t30',
+    google: 'DSNdkeM9jtaHHnc_EOjyL4-edKgqPjy2kXP4Car_f2E',
   },
   alternates: {
     canonical: 'https://mondo-sport.vercel.app',
