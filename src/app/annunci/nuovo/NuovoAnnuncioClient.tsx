@@ -42,6 +42,7 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
 
   const salva = async () => {
     if (!form.tipo) { setError('Seleziona il tipo di annuncio'); return }
+    const isSponsor = form.tipo === 'cerca_sponsor' || form.tipo === 'offre_sponsorizzazione'
     if (!form.titolo.trim()) { setError('Il titolo è obbligatorio'); return }
     if (!form.sport) { setError('Seleziona uno sport'); return }
     if (!form.regione) { setError('Seleziona la regione'); return }
@@ -132,6 +133,49 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
             placeholder="Descrivi l'annuncio in dettaglio..." maxLength={500} />
           <span style={{ fontSize: 11, color: '#9ca3af', float: 'right' }}>{form.descrizione.length}/500</span>
         </div>
+
+        {/* Campi specifici per annunci sponsor */}
+        {(form.tipo === 'cerca_sponsor' || form.tipo === 'offre_sponsorizzazione') && (
+          <div style={{ background: '#fffbeb', border: '1.5px solid #fde68a', borderRadius: 10, padding: '14px 16px' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#92400e', marginBottom: 12 }}>
+              {form.tipo === 'cerca_sponsor' ? '🤝 Dettagli ricerca sponsor' : '💼 Dettagli offerta sponsorizzazione'}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div>
+                <label className="ms-label">Settore merceologico</label>
+                <input type="text" className="ms-input"
+                  value={(form as any).settore || ''} onChange={e => upd('settore', e.target.value)}
+                  placeholder="Es. Abbigliamento, Alimentare, Auto..." />
+              </div>
+              <div>
+                <label className="ms-label">Budget indicativo</label>
+                <select className="ms-select" value={(form as any).budget || ''} onChange={e => upd('budget', e.target.value)}>
+                  <option value="">Non specificato</option>
+                  <option value="sotto_500">Sotto €500</option>
+                  <option value="500_2000">€500 - €2.000</option>
+                  <option value="2000_5000">€2.000 - €5.000</option>
+                  <option value="5000_10000">€5.000 - €10.000</option>
+                  <option value="oltre_10000">Oltre €10.000</option>
+                </select>
+              </div>
+            </div>
+            <div style={{ marginTop: 12 }}>
+              <label className="ms-label">Cosa offre/cerca</label>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
+                {['Logo su maglia', 'Spazio pubblicitario', 'Materiale sportivo', 'Contributo economico', 'Prodotti/servizi', 'Visibilità social', 'Naming rights'].map(v => (
+                  <button key={v} type="button"
+                    onClick={() => {
+                      const curr = (form as any).benefici || []
+                      upd('benefici', curr.includes(v) ? curr.filter((x: string) => x !== v) : [...curr, v])
+                    }}
+                    style={{ padding: '5px 12px', borderRadius: 20, border: `1.5px solid ${((form as any).benefici || []).includes(v) ? '#d97706' : '#d0dde2'}`, background: ((form as any).benefici || []).includes(v) ? '#fff7ed' : '#fff', color: ((form as any).benefici || []).includes(v) ? '#d97706' : '#6b7280', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Barlow, sans-serif' }}>
+                    {((form as any).benefici || []).includes(v) ? '✓ ' : ''}{v}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Piede e Altezza — solo per atleti in sport con piede */}
         {['ricerca_squadra', 'disponibilita', 'cerca_atleti'].includes(form.tipo as string) &&

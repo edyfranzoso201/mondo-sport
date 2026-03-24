@@ -35,7 +35,9 @@ const TIPO_CONFIG: Record<string, { label: string; icon: React.ReactNode; bg: st
   torneo:           { label: 'Torneo',           icon: <Trophy size={11} />,    bg: '#fef3e2', text: '#8a5a00' },
   amichevole:       { label: 'Amichevole',       icon: <Handshake size={11} />, bg: '#f0eafb', text: '#6d3d8c' },
   cerca_torneo:     { label: 'Cerco torneo',     icon: <Trophy size={11} />,    bg: '#fff3cd', text: '#7a5000' },
-  cerca_amichevole: { label: 'Cerco amichevole', icon: <Handshake size={11} />, bg: '#ede9fb', text: '#5a2a9e' },
+  cerca_amichevole:   { label: 'Cerco amichevole',       icon: <Handshake size={11} />, bg: '#ede9fb', text: '#5a2a9e' },
+  cerca_sponsor:      { label: 'Cerca Sponsor',          icon: <span>🤝</span>,         bg: '#fff7ed', text: '#9a3412' },
+  offre_sponsorizzazione: { label: 'Offre Sponsorizzazione', icon: <span>💼</span>,     bg: '#fef9c3', text: '#854d0e' },
 }
 
 const LIVELLO_CONFIG: Record<string, { label: string; color: string }> = {
@@ -101,6 +103,8 @@ export default function AnnunciListV2({ annunci, total, isGuest, isAdmin, filtri
           { color: '#d97706', label: 'Coach / Staff' },
           { color: '#7c3aed', label: 'Torneo' },
           { color: '#ea580c', label: 'Amichevole' },
+          { color: '#d97706', label: '🤝 Cerca Sponsor' },
+          { color: '#ca8a04', label: '💼 Offre Sponsorizzazione' },
         ].map(({ color, label }) => (
           <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <div style={{ width: 12, height: 12, borderRadius: 3, background: color, flexShrink: 0 }} />
@@ -201,6 +205,9 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
     if (ann.tipo === 'torneo') return { border: '2px solid #7c3aed', topBar: 'linear-gradient(90deg, #7c3aed, #a78bfa)', glow: '0 0 0 1px #ddd6fe' }
     // Bordo Arancio: Amichevole
     if (ann.tipo === 'amichevole' || ann.tipo === 'cerca_amichevole' || ann.tipo === 'cerca_torneo') return { border: '2px solid #ea580c', topBar: 'linear-gradient(90deg, #ea580c, #fb923c)', glow: '0 0 0 1px #fed7aa' }
+    // Bordo Oro/Ambra: Sponsor
+    if (ann.tipo === 'cerca_sponsor') return { border: '2px solid #d97706', topBar: 'linear-gradient(90deg, #d97706, #fbbf24)', glow: '0 0 0 1px #fde68a' }
+    if (ann.tipo === 'offre_sponsorizzazione') return { border: '2px solid #ca8a04', topBar: 'linear-gradient(90deg, #ca8a04, #facc15)', glow: '0 0 0 1px #fef08a' }
     // Default
     return { border: `2px solid ${tc.border}`, topBar: tc.border, glow: 'none' }
   }
@@ -275,6 +282,27 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
           <p style={{ fontSize: 12, fontWeight: 700, color: '#1e3a8a', margin: '0 0 8px', lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>
             {ann.descrizione}
           </p>
+        )}
+
+        {/* Info sponsor */}
+        {(ann.tipo === 'cerca_sponsor' || ann.tipo === 'offre_sponsorizzazione') && (
+          <div style={{ background: '#fffbeb', borderRadius: 8, padding: '8px 10px', marginBottom: 8, fontSize: 11, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {(ann as any).settore && (
+              <span style={{ padding: '2px 8px', borderRadius: 10, background: '#fef3c7', color: '#92400e', fontWeight: 600 }}>
+                🏢 {(ann as any).settore}
+              </span>
+            )}
+            {(ann as any).budget && (
+              <span style={{ padding: '2px 8px', borderRadius: 10, background: '#fef3c7', color: '#92400e', fontWeight: 600 }}>
+                💰 {({'sotto_500':'< €500','500_2000':'€500-2k','2000_5000':'€2k-5k','5000_10000':'€5k-10k','oltre_10000':'> €10k'} as any)[(ann as any).budget] || (ann as any).budget}
+              </span>
+            )}
+            {((ann as any).benefici || []).slice(0, 3).map((b: string) => (
+              <span key={b} style={{ padding: '2px 8px', borderRadius: 10, background: '#fef9c3', color: '#854d0e', fontWeight: 600 }}>
+                {b}
+              </span>
+            ))}
+          </div>
         )}
 
         {/* Ruoli */}

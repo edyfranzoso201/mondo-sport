@@ -275,7 +275,7 @@ export interface SlotAd {
 
 // ─── Annunci multipli ─────────────────────────────────────────────────────────
 
-export type TipoAnnuncio = 'ricerca_squadra' | 'disponibilita' | 'cerca_atleti' | 'torneo' | 'amichevole' | 'cerca_torneo' | 'cerca_amichevole'
+export type TipoAnnuncio = 'ricerca_squadra' | 'disponibilita' | 'cerca_atleti' | 'torneo' | 'amichevole' | 'cerca_torneo' | 'cerca_amichevole' | 'cerca_sponsor' | 'offre_sponsorizzazione'
 export type LivelloGioco = 'basso' | 'medio' | 'alto'
 
 export interface Annuncio {
