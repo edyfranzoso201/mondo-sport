@@ -269,6 +269,8 @@ export interface SlotAd {
   paginaInterna?: string  // es. "/registrazione", "/mappa"
   // Immagine (URL)
   immagineUrl?: string
+  // Video YouTube o Vimeo
+  videoUrl?: string       // es. "https://www.youtube.com/watch?v=XXXX" o "https://vimeo.com/XXXX"
   attivo: boolean
   updatedAt: string
 }

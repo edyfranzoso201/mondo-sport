@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { SlotAd } from '@/types'
+import { getEmbedUrl } from '@/lib/videoUtils'
 
 interface SidebarAdProps {
   position: 'left' | 'right'
@@ -62,7 +63,17 @@ export default function SidebarAd({ position }: SidebarAdProps) {
           onMouseEnter={e => { e.currentTarget.style.opacity = '0.9'; e.currentTarget.style.transform = 'scale(1.01)' }}
           onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1)' }}>
             {/* Immagine di sfondo */}
-            {slot.immagineUrl && (
+            {slot.videoUrl && getEmbedUrl(slot.videoUrl) && (
+              <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: 8, overflow: 'hidden', marginBottom: 6 }}>
+                <iframe
+                  src={getEmbedUrl(slot.videoUrl)!}
+                  style={{ width: '100%', height: '100%', border: 'none' }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            )}
+            {slot.immagineUrl && !slot.videoUrl && (
               <img src={slot.immagineUrl} alt="" style={{
                 position: 'absolute', inset: 0, width: '100%', height: '100%',
                 objectFit: 'cover', opacity: 0.85,

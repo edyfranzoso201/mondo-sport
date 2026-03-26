@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { getEmbedUrl } from '@/lib/videoUtils'
 import { X } from 'lucide-react'
 
 interface SlotAd {
@@ -8,6 +9,7 @@ interface SlotAd {
   sottotitolo?: string
   url?: string
   urlImmagine?: string
+  videoUrl?: string
   colore?: string
   nuovaScheda?: boolean
 }
@@ -44,6 +46,7 @@ export default function AdPopup() {
             sottotitolo: s.sottotitolo,
             url: s.urlEsterno || (s.paginaInterna ? `/${s.paginaInterna}` : undefined),
             urlImmagine: s.immagineUrl,
+            videoUrl: s.videoUrl,
             colore: s.coloresfondo,
             nuovaScheda: s.apriNuovaTab,
           })
@@ -111,7 +114,16 @@ export default function AdPopup() {
             alignItems: 'center', justifyContent: 'center',
             padding: 24, textAlign: 'center',
           }}>
-          {slot.urlImmagine ? (
+          {slot.videoUrl && getEmbedUrl(slot.videoUrl) ? (
+            <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: 8, overflow: 'hidden', marginBottom: slot.titolo ? 12 : 0 }}>
+              <iframe
+                src={getEmbedUrl(slot.videoUrl)!}
+                style={{ width: '100%', height: '100%', border: 'none' }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          ) : slot.urlImmagine ? (
             <img src={slot.urlImmagine} alt={slot.titolo || 'Annuncio'} style={{ maxWidth: '100%', maxHeight: 180, objectFit: 'contain', borderRadius: 8, marginBottom: slot.titolo ? 12 : 0 }} />
           ) : null}
           {slot.titolo && (
