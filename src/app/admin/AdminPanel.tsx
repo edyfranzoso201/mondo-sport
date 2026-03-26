@@ -84,6 +84,9 @@ export default function AdminPanel({ pending: initialPending, approved: initialA
             {pending.length} in attesa
           </span>
         )}
+        <a href="/admin/crea-annuncio" style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', background: '#fef3c7', color: '#d97706', borderRadius: 8, textDecoration: 'none', fontSize: 13, fontWeight: 600, border: '1px solid #fde68a', marginRight: 8 }}>
+          📝 Crea Annuncio
+        </a>
         <a href="/admin/pubblicita" style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', background: 'var(--ms-green-light)', color: 'var(--ms-green)', borderRadius: 8, textDecoration: 'none', fontSize: 13, fontWeight: 600, border: '1px solid var(--ms-green)' }}>
           <Layout size={14} /> Gestione pubblicità
         </a>

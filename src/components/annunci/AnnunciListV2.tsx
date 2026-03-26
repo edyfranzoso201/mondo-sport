@@ -194,7 +194,8 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
   const isTorneo = ann.tipo === 'torneo' || ann.tipo === 'amichevole'
   const tipoUtente = ann.autore.tipo || 'atleta'
   const tc = getTipoColors(tipoUtente)
-  const iniziale = (ann.autore.nomeSocieta || ann.autore.alias || '?')[0].toUpperCase()
+  const aliasVisibile = (ann as any).alias || ann.autore.nomeSocieta || ann.autore.alias || '?'
+  const iniziale = aliasVisibile[0].toUpperCase()
 
   // ── Colori bordo per ruolo/tipo ───────────────────────────────────────────
   const getBorderStyle = () => {
@@ -269,7 +270,7 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
           </div>
           <div style={{ fontSize: 12, color: '#6b7280', display: 'flex', alignItems: 'center', gap: 4, minWidth: 0 }}>
             <span style={{ fontWeight: 700, color: tc.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {ann.autore.nomeSocieta || ann.autore.alias}
+              {(ann as any).alias || ann.autore.nomeSocieta || ann.autore.alias}
             </span>
             <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 8, background: tc.badge, color: tc.badgeText, fontWeight: 700, textTransform: 'uppercase', flexShrink: 0 }}>
               {TIPO_LABEL[tipoUtente] || tipoUtente}

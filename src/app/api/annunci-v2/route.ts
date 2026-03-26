@@ -39,17 +39,29 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json()
   if (!body.titolo?.trim()) return NextResponse.json({ error: 'Titolo obbligatorio' }, { status: 400 })
-  if (!body.sport) return NextResponse.json({ error: 'Sport obbligatorio' }, { status: 400 })
   if (!body.tipo) return NextResponse.json({ error: 'Tipo obbligatorio' }, { status: 400 })
 
+  // Admin creating on behalf
+  const isAdminCreated = body.isAdminCreated === true
+  if (isAdminCreated) {
+    const { getUtente } = await import('@/lib/db')
+    const u = await getUtente(session.user.id!)
+    if (u?.tipo !== 'admin') return NextResponse.json({ error: 'Non autorizzato' }, { status: 403 })
+  }
+
+  const noSportTypes = ['cerca_sponsor', 'offre_sponsorizzazione']
+  if (!body.sport && !noSportTypes.includes(body.tipo) && !isAdminCreated) {
+    return NextResponse.json({ error: 'Sport obbligatorio' }, { status: 400 })
+  }
+
   const now = new Date().toISOString()
-  const ann: Annuncio = {
+  const ann: any = {
     id: uuidv4(),
-    userId: session.user.id!,
+    userId: isAdminCreated ? body.userId : session.user.id!,
     tipo: body.tipo as TipoAnnuncio,
     titolo: body.titolo.trim(),
     descrizione: body.descrizione?.trim() || '',
-    sport: body.sport as Sport,
+    sport: body.sport as Sport || undefined,
     ruoli: body.ruoli || [],
     categoria: body.categoria || [],
     comune: body.comune || '',
@@ -60,10 +72,27 @@ export async function POST(req: NextRequest) {
     dataFine: body.dataFine || undefined,
     luogo: body.luogo || undefined,
     attivo: true,
-    scadeAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
-    createdAt: now,
-    updatedAt: now,
-    bumpedAt: now,
+    chiuso: body.chiuso || false,
+    chiusoAt: body.chiuso ? now : null,
+    scadeAt: body.chiuso
+      ? new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString()
+      : new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
+    createdAt: now, updatedAt: now, bumpedAt: now,
+    linkFacebook: body.linkFacebook || undefined,
+    linkInstagram: body.linkInstagram || undefined,
+    linkYouTube: body.linkYouTube || undefined,
+    linkSito: body.linkSito || undefined,
+    settore: body.settore || undefined,
+    budget: body.budget || undefined,
+    benefici: body.benefici || undefined,
+    piede: body.piede || undefined,
+    altezza: body.altezza || undefined,
+    ...(isAdminCreated && {
+      alias: body.alias || undefined,
+      nomeSocieta: body.nomeSocieta || undefined,
+      tipoUtente: body.tipoUtente || 'atleta',
+      isAdminCreated: true,
+    }),
   }
 
   await creaAnnuncio(ann)
