@@ -265,6 +265,13 @@ export default function PubblicitaClient({ slots: initialSlots }: Props) {
                         <input className="ms-input" value={form.immagineUrl || ''} onChange={e => upd('immagineUrl', e.target.value)} placeholder="https://esempio.it/banner.jpg" />
                       </div>
 
+                      {/* URL video YouTube/Vimeo */}
+                      <div>
+                        <label className="ms-label">🎬 URL Video YouTube/Vimeo (opzionale)</label>
+                        <input className="ms-input" value={(form as any).videoUrl || ''} onChange={e => upd('videoUrl' as any, e.target.value)} placeholder="https://www.youtube.com/watch?v=... oppure https://youtu.be/..." />
+                        <span style={{ fontSize: 11, color: '#9ca3af' }}>Se presente, il video sostituisce l'immagine nel banner.</span>
+                      </div>
+
                       {/* Colori */}
                       <div>
                         <label className="ms-label">Colore banner</label>
