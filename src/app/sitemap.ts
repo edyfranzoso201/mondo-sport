@@ -22,5 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/?tipo=cerca_atleti`,      lastModified: now, changeFrequency: 'daily',   priority: 0.85 },
     { url: `${base}/?tipo=torneo`,            lastModified: now, changeFrequency: 'daily',   priority: 0.80 },
     { url: `${base}/?tipo=amichevole`,        lastModified: now, changeFrequency: 'daily',   priority: 0.80 },
+    { url: `${base}/?tipo=cerca_sponsor`,         lastModified: now, changeFrequency: 'daily', priority: 0.80 },
+    { url: `${base}/?tipo=offre_sponsorizzazione`, lastModified: now, changeFrequency: 'daily', priority: 0.80 },
   ]
 }
