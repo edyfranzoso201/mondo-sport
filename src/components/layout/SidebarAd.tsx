@@ -52,15 +52,12 @@ export default function SidebarAd({ position }: SidebarAdProps) {
 
         // Contenuto banner
         const hasVideo = !!(slot.videoUrl && getEmbedUrl(slot.videoUrl))
-        const ytMatch = slot.videoUrl?.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
-        const ytId = ytMatch ? ytMatch[1] : null
-        const thumbUrl = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : null
         const videoTarget = slot.urlEsterno || slot.videoUrl || ''
 
         const bannerContent = (
           <div style={{
             width: 140, height: h, borderRadius: 10,
-            background: hasVideo ? '#000' : (slot.coloresfondo || '#4a7c8e'),
+            background: hasVideo ? 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' : (slot.coloresfondo || '#4a7c8e'),
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center',
             padding: hasVideo ? 0 : 12,
@@ -69,32 +66,32 @@ export default function SidebarAd({ position }: SidebarAdProps) {
           }}
           onMouseEnter={e => { e.currentTarget.style.opacity = '0.9'; e.currentTarget.style.transform = 'scale(1.01)' }}
           onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1)' }}>
-            {/* Thumbnail YouTube con pulsante play */}
-            {hasVideo && thumbUrl && (
+            {/* Preview video con pulsante play */}
+            {hasVideo && (
               <a href={videoTarget} target="_blank" rel="noopener noreferrer"
-                style={{ position: 'absolute', inset: 0, display: 'block', textDecoration: 'none' }}>
-                <img src={thumbUrl} alt="Video"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                {/* Pulsante play */}
-                <div style={{
-                  position: 'absolute', inset: 0,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: 'rgba(0,0,0,0.25)',
-                }}>
+                style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', gap: 8 }}>
+                {/* Icona YouTube */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
                   <div style={{
-                    width: 40, height: 40, borderRadius: '50%',
-                    background: 'rgba(255,0,0,0.9)',
+                    width: 48, height: 34, borderRadius: 8,
+                    background: '#FF0000',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                    boxShadow: '0 2px 12px rgba(255,0,0,0.5)',
                   }}>
                     <div style={{
                       width: 0, height: 0,
-                      borderTop: '8px solid transparent',
-                      borderBottom: '8px solid transparent',
-                      borderLeft: '14px solid #fff',
-                      marginLeft: 3,
+                      borderTop: '9px solid transparent',
+                      borderBottom: '9px solid transparent',
+                      borderLeft: '16px solid #fff',
+                      marginLeft: 4,
                     }} />
                   </div>
+                  <span style={{ color: '#fff', fontSize: 10, fontWeight: 700, fontFamily: 'Barlow, sans-serif', textAlign: 'center', lineHeight: 1.3 }}>
+                    {slot.titolo || 'Guarda il video'}
+                  </span>
+                  <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 9 }}>
+                    Clicca per aprire
+                  </span>
                 </div>
               </a>
             )}
