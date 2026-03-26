@@ -301,6 +301,11 @@ export interface Annuncio {
   attivo: boolean
   piede?: 'destro' | 'sinistro' | 'entrambi'  // solo per sport con piede
   altezza?: number       // cm
+  // Link social/media
+  linkFacebook?: string
+  linkInstagram?: string
+  linkYouTube?: string
+  linkSito?: string
   chiuso?: boolean      // visibile ma non contattabile via chat
   chiusoAt?: string     // data in cui è stato messo "non disponibile"
   scadeAt?: string      // data di scadenza calcolata (ISO)

@@ -102,6 +102,10 @@ export default function MieiAnnunciClient({ annunci: initial }: { annunci: Annun
       luogo: ann.luogo,
       piede: (ann as any).piede || '',
       altezza: (ann as any).altezza || '',
+      linkFacebook: (ann as any).linkFacebook || '',
+      linkInstagram: (ann as any).linkInstagram || '',
+      linkYouTube: (ann as any).linkYouTube || '',
+      linkSito: (ann as any).linkSito || '',
     })
   }
 

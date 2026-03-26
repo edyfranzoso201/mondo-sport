@@ -344,6 +344,36 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
           </div>
         )}
 
+        {/* Link Social */}
+        {((ann as any).linkFacebook || (ann as any).linkInstagram || (ann as any).linkYouTube || (ann as any).linkSito) && (
+          <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
+            {(ann as any).linkFacebook && (
+              <a href={(ann as any).linkFacebook} target="_blank" rel="noopener noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, padding: '3px 8px', borderRadius: 10, background: '#e7f0fd', color: '#1877f2', border: '1px solid #c3d9f8', textDecoration: 'none', fontWeight: 600 }}>
+                📘 Facebook
+              </a>
+            )}
+            {(ann as any).linkInstagram && (
+              <a href={(ann as any).linkInstagram} target="_blank" rel="noopener noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, padding: '3px 8px', borderRadius: 10, background: '#fce4ec', color: '#e1306c', border: '1px solid #f8bbd0', textDecoration: 'none', fontWeight: 600 }}>
+                📸 Instagram
+              </a>
+            )}
+            {(ann as any).linkYouTube && (
+              <a href={(ann as any).linkYouTube} target="_blank" rel="noopener noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, padding: '3px 8px', borderRadius: 10, background: '#fde8e8', color: '#ff0000', border: '1px solid #fcc', textDecoration: 'none', fontWeight: 600 }}>
+                ▶️ YouTube
+              </a>
+            )}
+            {(ann as any).linkSito && (
+              <a href={(ann as any).linkSito} target="_blank" rel="noopener noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, padding: '3px 8px', borderRadius: 10, background: '#e8f3f6', color: '#2a6e78', border: '1px solid #b0d4e0', textDecoration: 'none', fontWeight: 600 }}>
+                🌐 Sito web
+              </a>
+            )}
+          </div>
+        )}
+
         {/* Footer */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f0f4f5', paddingTop: 10 }}>
           <span style={{ fontSize: 10, color: '#b0bec5' }}>

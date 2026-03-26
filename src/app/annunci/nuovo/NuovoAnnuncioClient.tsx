@@ -333,6 +333,53 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
             • Usa "Porta in cima" per aggiornare la data e rinnovare la scadenza di 1 anno.
           </p>
         </div>
+
+        {/* Link Social — per admin, società, staff */}
+        {['admin', 'societa', 'staff'].includes(userTipo) && (
+          <div style={{ background: '#fff', border: '1.5px solid #e8f0f4', borderRadius: 12, padding: '14px 16px' }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#1e3a8a', marginBottom: 12 }}>
+              🔗 Link Social & Media <span style={{ fontSize: 11, fontWeight: 400, color: '#9ca3af' }}>(opzionali)</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div>
+                <label className="ms-label" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span style={{ fontSize: 14 }}>📘</span> Facebook
+                </label>
+                <input type="url" className="ms-input"
+                  value={form.linkFacebook || ''}
+                  onChange={e => upd('linkFacebook', e.target.value)}
+                  placeholder="https://facebook.com/..." />
+              </div>
+              <div>
+                <label className="ms-label" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span style={{ fontSize: 14 }}>📸</span> Instagram
+                </label>
+                <input type="url" className="ms-input"
+                  value={form.linkInstagram || ''}
+                  onChange={e => upd('linkInstagram', e.target.value)}
+                  placeholder="https://instagram.com/..." />
+              </div>
+              <div>
+                <label className="ms-label" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span style={{ fontSize: 14 }}>▶️</span> YouTube
+                </label>
+                <input type="url" className="ms-input"
+                  value={form.linkYouTube || ''}
+                  onChange={e => upd('linkYouTube', e.target.value)}
+                  placeholder="https://youtube.com/..." />
+              </div>
+              <div>
+                <label className="ms-label" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span style={{ fontSize: 14 }}>🌐</span> Sito web
+                </label>
+                <input type="url" className="ms-input"
+                  value={form.linkSito || ''}
+                  onChange={e => upd('linkSito', e.target.value)}
+                  placeholder="https://www.tuosito.it" />
+              </div>
+            </div>
+          </div>
+        )}
         <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 4 }}>
           <Link href="/" className="btn-ghost" style={{ textDecoration: 'none' }}>Annulla</Link>
           <button className="btn-primary" onClick={salva} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 24px' }}>
