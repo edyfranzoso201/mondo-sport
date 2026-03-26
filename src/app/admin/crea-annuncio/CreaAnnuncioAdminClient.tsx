@@ -76,7 +76,7 @@ export default function CreaAnnuncioAdminClient({ adminId }: Props) {
 
   const isTorneo = ['torneo', 'amichevole', 'cerca_torneo', 'cerca_amichevole'].includes(form.tipo)
   const ruoliDisp = form.sport ? RUOLI_PER_SPORT[form.sport as Sport] || [] : []
-  const categorieDisp = form.sport ? (CATEGORIE as Record<string, string[]>)[form.sport] || [] : []
+  const categorieDisp = CATEGORIE
 
   const salva = async () => {
     if (!form.tipo) return setError('Seleziona il tipo di annuncio')
