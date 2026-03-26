@@ -24,5 +24,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/?tipo=amichevole`,        lastModified: now, changeFrequency: 'daily',   priority: 0.80 },
     { url: `${base}/?tipo=cerca_sponsor`,         lastModified: now, changeFrequency: 'daily', priority: 0.80 },
     { url: `${base}/?tipo=offre_sponsorizzazione`, lastModified: now, changeFrequency: 'daily', priority: 0.80 },
+    { url: `${base}/?sport=preparatore`,  lastModified: now, changeFrequency: 'daily', priority: 0.85 },
+    { url: `${base}/?sport=arbitro`,      lastModified: now, changeFrequency: 'daily', priority: 0.85 },
+    { url: `${base}/?sport=allenatore`,   lastModified: now, changeFrequency: 'daily', priority: 0.85 },
   ]
 }

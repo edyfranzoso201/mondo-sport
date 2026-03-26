@@ -41,6 +41,7 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
   }))
 
   const isTorneo = ['torneo', 'amichevole', 'cerca_torneo', 'cerca_amichevole'].includes(form.tipo as string)
+  const isProfessione = ['preparatore', 'arbitro', 'allenatore'].includes(form.sport as string)
   const isCercaEvento = (form.tipo as string) === 'cerca_torneo' || (form.tipo as string) === 'cerca_amichevole'
   const tipiDisp = userTipo === 'societa' ? TIPI_SOCIETA : TIPI_BASE
 

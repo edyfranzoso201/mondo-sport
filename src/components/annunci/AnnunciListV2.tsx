@@ -105,6 +105,9 @@ export default function AnnunciListV2({ annunci, total, isGuest, isAdmin, filtri
           { color: '#ea580c', label: 'Amichevole' },
           { color: '#d97706', label: '🤝 Cerca Sponsor' },
           { color: '#ca8a04', label: '💼 Offre Sponsorizzazione' },
+          { color: '#16a34a', label: '🏋️ Preparatore' },
+          { color: '#ca8a04', label: '🟨 Arbitro' },
+          { color: '#3b82f6', label: '📋 Allenatore' },
         ].map(({ color, label }) => (
           <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <div style={{ width: 12, height: 12, borderRadius: 3, background: color, flexShrink: 0 }} />

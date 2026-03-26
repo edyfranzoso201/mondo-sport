@@ -1,6 +1,6 @@
 // ─── Sport & Ruoli ────────────────────────────────────────────────────────────
 
-export type Sport = 'calcio' | 'calcio5' | 'pallavolo' | 'basket' | 'padel' | 'softair'
+export type Sport = 'calcio' | 'calcio5' | 'pallavolo' | 'basket' | 'padel' | 'softair' | 'preparatore' | 'arbitro' | 'allenatore'
 
 export const SPORT_LABELS: Record<Sport, string> = {
   calcio: 'Calcio',
@@ -9,6 +9,9 @@ export const SPORT_LABELS: Record<Sport, string> = {
   basket: 'Basket',
   padel: 'Padel',
   softair: 'Softair',
+  preparatore: 'Preparatore Atletico',
+  arbitro: 'Arbitro',
+  allenatore: 'Allenatore',
 }
 
 export const SPORT_ICONS: Record<Sport, string> = {
@@ -18,6 +21,9 @@ export const SPORT_ICONS: Record<Sport, string> = {
   basket: '🏀',
   padel: '🎾',
   softair: '🎯',
+  preparatore: '🏋️',
+  arbitro: '🟨',
+  allenatore: '📋',
 }
 
 export const RUOLI_PER_SPORT: Record<Sport, string[]> = {
@@ -52,6 +58,34 @@ export const RUOLI_PER_SPORT: Record<Sport, string[]> = {
     'Cecchino (Sniper)', 'Spotter', 'Navigatore / Cartografo',
     'Medico da campo', 'Geniere', 'Retroguardia', 'Freeman',
     'Istruttore tattico', 'Team manager', 'Dirigente',
+  ],
+  preparatore: [
+    'Preparatore atletico con patentino',
+    'Preparatore atletico senza patentino',
+    'Preparatore portieri con patentino',
+    'Preparatore portieri senza patentino',
+    'Fisioterapista sportivo',
+    'Nutrizionista sportivo',
+    'Mental coach',
+  ],
+  arbitro: [
+    'Arbitro con patentino FIGC',
+    'Arbitro con patentino FIPAV',
+    'Arbitro con patentino FIP',
+    'Arbitro con patentino FITP',
+    'Arbitro senza patentino',
+    'Assistente arbitro',
+    'Quarto ufficiale',
+  ],
+  allenatore: [
+    'Allenatore con patentino UEFA A',
+    'Allenatore con patentino UEFA B',
+    'Allenatore con patentino UEFA C',
+    'Allenatore con patentino regionale',
+    'Allenatore senza patentino',
+    'Allenatore settore giovanile',
+    'Allenatore in seconda',
+    'Collaboratore tecnico',
   ],
 }
 

@@ -77,6 +77,26 @@ export default function FiltriBarV2({ filtriAttivi, comuneUtente = '' }: FiltriB
         ))}
       </div>
 
+      {/* Filtri rapidi professionisti */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 20px 0', overflowX: 'auto', scrollbarWidth: 'none' }}>
+        <span style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: '0.5px', flexShrink: 0 }}>Figure:</span>
+        {[
+          { v: 'preparatore', icon: '🏋️', label: 'Preparatore' },
+          { v: 'arbitro',     icon: '🟨', label: 'Arbitro' },
+          { v: 'allenatore',  icon: '📋', label: 'Allenatore' },
+        ].map(({ v, icon, label }) => {
+          const attivo = filtri.sport === v
+          return (
+            <button key={v}
+              onClick={() => { const ns = attivo ? '' : v; upd('sport', ns); applica({ sport: ns, page: 1 }) }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '5px 10px', borderRadius: 10, border: `2px solid ${attivo ? '#7c3aed' : '#e5e7eb'}`, background: attivo ? '#ede9fb' : '#f9fafb', cursor: 'pointer', flexShrink: 0, transition: 'all 0.15s', fontFamily: 'Barlow, sans-serif' }}>
+              <span style={{ fontSize: 18 }}>{icon}</span>
+              <span style={{ fontSize: 9, fontWeight: 600, color: attivo ? '#7c3aed' : '#6b7280', whiteSpace: 'nowrap' }}>{label}</span>
+            </button>
+          )
+        })}
+      </div>
+
       {/* Filtri rapidi per tipo — inclusi sponsor */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 20px 0', overflowX: 'auto', scrollbarWidth: 'none' }}>
         <span style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: '0.5px', flexShrink: 0 }}>Tipo:</span>
