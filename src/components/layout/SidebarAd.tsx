@@ -51,51 +51,54 @@ export default function SidebarAd({ position }: SidebarAdProps) {
         }
 
         // Contenuto banner
+        const hasVideo = !!(slot.videoUrl && getEmbedUrl(slot.videoUrl))
         const bannerContent = (
           <div style={{
             width: 140, height: h, borderRadius: 10,
-            background: slot.coloresfondo || '#4a7c8e',
+            background: hasVideo ? '#000' : (slot.coloresfondo || '#4a7c8e'),
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center',
-            padding: 12, cursor: 'pointer', overflow: 'hidden',
+            padding: hasVideo ? 0 : 12,
+            cursor: 'pointer', overflow: 'hidden',
             position: 'relative', transition: 'opacity 0.15s, transform 0.15s',
           }}
           onMouseEnter={e => { e.currentTarget.style.opacity = '0.9'; e.currentTarget.style.transform = 'scale(1.01)' }}
           onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1)' }}>
-            {/* Immagine di sfondo */}
-            {slot.videoUrl && getEmbedUrl(slot.videoUrl) && (
-              <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: 8, overflow: 'hidden', marginBottom: 6 }}>
-                <iframe
-                  src={getEmbedUrl(slot.videoUrl)!}
-                  style={{ width: '100%', height: '100%', border: 'none' }}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
+            {/* Video YouTube/Vimeo */}
+            {hasVideo && (
+              <iframe
+                src={getEmbedUrl(slot.videoUrl!)!}
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
             )}
-            {slot.immagineUrl && !slot.videoUrl && (
+            {/* Immagine di sfondo - solo se no video */}
+            {slot.immagineUrl && !hasVideo && (
               <img src={slot.immagineUrl} alt="" style={{
                 position: 'absolute', inset: 0, width: '100%', height: '100%',
                 objectFit: 'cover', opacity: 0.85,
               }} />
             )}
-            {/* Testi */}
-            <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-              {slot.titolo && (
-                <div style={{
-                  fontSize: 14, fontWeight: 800, lineHeight: 1.25,
-                  color: slot.coloretesto || '#fff',
-                  marginBottom: slot.sottotitolo ? 6 : 0,
-                }}>
-                  {slot.titolo}
-                </div>
-              )}
-              {slot.sottotitolo && (
-                <div style={{ fontSize: 12, color: slot.coloretesto || '#fff', opacity: 0.9, lineHeight: 1.3 }}>
-                  {slot.sottotitolo}
-                </div>
-              )}
-            </div>
+            {/* Testi - solo se no video */}
+            {!hasVideo && (
+              <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+                {slot.titolo && (
+                  <div style={{
+                    fontSize: 14, fontWeight: 800, lineHeight: 1.25,
+                    color: slot.coloretesto || '#fff',
+                    marginBottom: slot.sottotitolo ? 6 : 0,
+                  }}>
+                    {slot.titolo}
+                  </div>
+                )}
+                {slot.sottotitolo && (
+                  <div style={{ fontSize: 12, color: slot.coloretesto || '#fff', opacity: 0.9, lineHeight: 1.3 }}>
+                    {slot.sottotitolo}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )
 
