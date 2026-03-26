@@ -15,6 +15,7 @@ export async function GET() {
     apriNuovaTab: s.apriNuovaTab,
     paginaInterna: s.paginaInterna,
     immagineUrl: s.immagineUrl,
+    videoUrl: s.videoUrl,
     attivo: s.attivo,
   }))
   return NextResponse.json({ success: true, data: pubblici })
