@@ -70,29 +70,33 @@ export default function SidebarAd({ position }: SidebarAdProps) {
             {hasVideo && (
               <a href={videoTarget} target="_blank" rel="noopener noreferrer"
                 style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', gap: 8 }}>
-                {/* Icona YouTube */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                  <div style={{
-                    width: 48, height: 34, borderRadius: 8,
-                    background: '#FF0000',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: '0 2px 12px rgba(255,0,0,0.5)',
-                  }}>
+                {slot.immagineUrl ? (
+                  /* Immagine personalizzata con play sovrapposto */
+                  <>
+                    <img src={slot.immagineUrl} alt={slot.titolo || 'Video'}
+                      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                     <div style={{
-                      width: 0, height: 0,
-                      borderTop: '9px solid transparent',
-                      borderBottom: '9px solid transparent',
-                      borderLeft: '16px solid #fff',
-                      marginLeft: 4,
-                    }} />
+                      position: 'relative', zIndex: 1,
+                      width: 48, height: 34, borderRadius: 8,
+                      background: 'rgba(255,0,0,0.9)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: '0 2px 12px rgba(0,0,0,0.5)',
+                    }}>
+                      <div style={{ width: 0, height: 0, borderTop: '9px solid transparent', borderBottom: '9px solid transparent', borderLeft: '16px solid #fff', marginLeft: 4 }} />
+                    </div>
+                  </>
+                ) : (
+                  /* Sfondo scuro con icona YouTube */
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                    <div style={{ width: 48, height: 34, borderRadius: 8, background: '#FF0000', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 12px rgba(255,0,0,0.5)' }}>
+                      <div style={{ width: 0, height: 0, borderTop: '9px solid transparent', borderBottom: '9px solid transparent', borderLeft: '16px solid #fff', marginLeft: 4 }} />
+                    </div>
+                    <span style={{ color: '#fff', fontSize: 10, fontWeight: 700, fontFamily: 'Barlow, sans-serif', textAlign: 'center', lineHeight: 1.3 }}>
+                      {slot.titolo || 'Guarda il video'}
+                    </span>
+                    <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 9 }}>Clicca per aprire</span>
                   </div>
-                  <span style={{ color: '#fff', fontSize: 10, fontWeight: 700, fontFamily: 'Barlow, sans-serif', textAlign: 'center', lineHeight: 1.3 }}>
-                    {slot.titolo || 'Guarda il video'}
-                  </span>
-                  <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 9 }}>
-                    Clicca per aprire
-                  </span>
-                </div>
+                )}
               </a>
             )}
             {/* Immagine di sfondo - solo se no video */}
