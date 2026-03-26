@@ -52,9 +52,10 @@ export default function SidebarAd({ position }: SidebarAdProps) {
 
         // Contenuto banner
         const hasVideo = !!(slot.videoUrl && getEmbedUrl(slot.videoUrl))
-        const embedUrl = hasVideo
-          ? getEmbedUrl(slot.videoUrl!) + '&autoplay=1&mute=1&loop=1&controls=0&playsinline=1'
-          : null
+        const ytMatch = slot.videoUrl?.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+        const ytId = ytMatch ? ytMatch[1] : null
+        const thumbUrl = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : null
+        const videoTarget = slot.urlEsterno || slot.videoUrl || ''
 
         const bannerContent = (
           <div style={{
@@ -68,24 +69,34 @@ export default function SidebarAd({ position }: SidebarAdProps) {
           }}
           onMouseEnter={e => { e.currentTarget.style.opacity = '0.9'; e.currentTarget.style.transform = 'scale(1.01)' }}
           onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1)' }}>
-            {/* Video YouTube/Vimeo con autoplay muto */}
-            {hasVideo && embedUrl && (
-              <>
-                <iframe
-                  src={embedUrl}
-                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none', pointerEvents: 'none' }}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-                {/* Layer cliccabile che apre YouTube */}
-                <a
-                  href={slot.urlEsterno || slot.videoUrl!}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ position: 'absolute', inset: 0, zIndex: 10, cursor: 'pointer' }}
-                  aria-label="Guarda su YouTube"
-                />
-              </>
+            {/* Thumbnail YouTube con pulsante play */}
+            {hasVideo && thumbUrl && (
+              <a href={videoTarget} target="_blank" rel="noopener noreferrer"
+                style={{ position: 'absolute', inset: 0, display: 'block', textDecoration: 'none' }}>
+                <img src={thumbUrl} alt="Video"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                {/* Pulsante play */}
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: 'rgba(0,0,0,0.25)',
+                }}>
+                  <div style={{
+                    width: 40, height: 40, borderRadius: '50%',
+                    background: 'rgba(255,0,0,0.9)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                  }}>
+                    <div style={{
+                      width: 0, height: 0,
+                      borderTop: '8px solid transparent',
+                      borderBottom: '8px solid transparent',
+                      borderLeft: '14px solid #fff',
+                      marginLeft: 3,
+                    }} />
+                  </div>
+                </div>
+              </a>
             )}
             {/* Immagine di sfondo - solo se no video */}
             {slot.immagineUrl && !hasVideo && (
