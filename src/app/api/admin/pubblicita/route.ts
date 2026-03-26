@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
     apriNuovaTab: body.apriNuovaTab !== false,
     paginaInterna: body.paginaInterna || undefined,
     immagineUrl: body.immagineUrl || undefined,
+    videoUrl: body.videoUrl || undefined,
     attivo: body.attivo !== false,
     updatedAt: new Date().toISOString(),
   }
