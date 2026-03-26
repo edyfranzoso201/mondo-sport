@@ -52,6 +52,10 @@ export default function SidebarAd({ position }: SidebarAdProps) {
 
         // Contenuto banner
         const hasVideo = !!(slot.videoUrl && getEmbedUrl(slot.videoUrl))
+        const embedUrl = hasVideo
+          ? getEmbedUrl(slot.videoUrl!) + '&autoplay=1&mute=1&loop=1&controls=0&playsinline=1'
+          : null
+
         const bannerContent = (
           <div style={{
             width: 140, height: h, borderRadius: 10,
@@ -64,14 +68,24 @@ export default function SidebarAd({ position }: SidebarAdProps) {
           }}
           onMouseEnter={e => { e.currentTarget.style.opacity = '0.9'; e.currentTarget.style.transform = 'scale(1.01)' }}
           onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1)' }}>
-            {/* Video YouTube/Vimeo */}
-            {hasVideo && (
-              <iframe
-                src={getEmbedUrl(slot.videoUrl!)!}
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+            {/* Video YouTube/Vimeo con autoplay muto */}
+            {hasVideo && embedUrl && (
+              <>
+                <iframe
+                  src={embedUrl}
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none', pointerEvents: 'none' }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+                {/* Layer cliccabile che apre YouTube */}
+                <a
+                  href={slot.urlEsterno || slot.videoUrl!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ position: 'absolute', inset: 0, zIndex: 10, cursor: 'pointer' }}
+                  aria-label="Guarda su YouTube"
+                />
+              </>
             )}
             {/* Immagine di sfondo - solo se no video */}
             {slot.immagineUrl && !hasVideo && (

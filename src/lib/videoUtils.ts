@@ -14,7 +14,7 @@ export function getEmbedUrl(url: string): string | null {
     /(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
   )
   if (ytMatch) {
-    return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=0&rel=0&modestbranding=1`
+    return `https://www.youtube.com/embed/${ytMatch[1]}?rel=0&modestbranding=1&playlist=${ytMatch[1]}`
   }
 
   // Vimeo
