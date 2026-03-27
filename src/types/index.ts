@@ -4,7 +4,7 @@ export type Sport = 'calcio' | 'calcio5' | 'pallavolo' | 'basket' | 'padel' | 's
 
 export const SPORT_LABELS: Record<Sport, string> = {
   calcio: 'Calcio',
-  calcio5: 'Calcio a 5',
+  calcio5: 'Calcio a 5 - 7 - 8',
   pallavolo: 'Pallavolo',
   basket: 'Basket',
   padel: 'Padel',
