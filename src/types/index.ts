@@ -1,6 +1,6 @@
 // ─── Sport & Ruoli ────────────────────────────────────────────────────────────
 
-export type Sport = 'calcio' | 'calcio5' | 'pallavolo' | 'basket' | 'padel' | 'softair' | 'preparatore' | 'arbitro' | 'allenatore'
+export type Sport = 'calcio' | 'calcio5' | 'pallavolo' | 'basket' | 'padel' | 'softair' | 'preparatore' | 'arbitro' | 'allenatore' | 'atletica'
 
 export const SPORT_LABELS: Record<Sport, string> = {
   calcio: 'Calcio',
@@ -12,6 +12,7 @@ export const SPORT_LABELS: Record<Sport, string> = {
   preparatore: 'Preparatore Atletico',
   arbitro: 'Arbitro',
   allenatore: 'Allenatore',
+  atletica: 'Atletica',
 }
 
 export const SPORT_ICONS: Record<Sport, string> = {
@@ -24,6 +25,7 @@ export const SPORT_ICONS: Record<Sport, string> = {
   preparatore: '🏋️',
   arbitro: '🟨',
   allenatore: '📋',
+  atletica: '🏃',
 }
 
 export const RUOLI_PER_SPORT: Record<Sport, string[]> = {
@@ -86,6 +88,20 @@ export const RUOLI_PER_SPORT: Record<Sport, string[]> = {
     'Allenatore settore giovanile',
     'Allenatore in seconda',
     'Collaboratore tecnico',
+  ],
+  atletica: [
+    'Velocista (100m - 400m)',
+    'Mezzofondista (800m - 1500m)',
+    'Fondista (5000m+)',
+    'Maratoneta',
+    'Saltatore in alto',
+    'Saltatore in lungo',
+    'Saltatore triplo',
+    'Lanciatore (peso/disco/giavellotto)',
+    'Ostacoli',
+    'Marciatore',
+    'Decatleta / Eptatleta',
+    'Allenatore atletica',
   ],
 }
 
@@ -311,7 +327,7 @@ export interface SlotAd {
 
 // ─── Annunci multipli ─────────────────────────────────────────────────────────
 
-export type TipoAnnuncio = 'ricerca_squadra' | 'disponibilita' | 'cerca_atleti' | 'torneo' | 'amichevole' | 'cerca_torneo' | 'cerca_amichevole' | 'cerca_sponsor' | 'offre_sponsorizzazione'
+export type TipoAnnuncio = 'ricerca_squadra' | 'disponibilita' | 'cerca_atleti' | 'torneo' | 'amichevole' | 'cerca_torneo' | 'cerca_amichevole' | 'cerca_sponsor' | 'offre_sponsorizzazione' | 'gara'
 export type LivelloGioco = 'basso' | 'medio' | 'alto'
 
 export interface Annuncio {

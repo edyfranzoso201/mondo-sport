@@ -24,6 +24,7 @@ const TUTTI_TIPI: { v: TipoAnnuncio; l: string; icon: string }[] = [
   { v: 'cerca_amichevole',      l: 'Cerca Amichevole',        icon: '🤝' },
   { v: 'cerca_sponsor',         l: 'Cerca Sponsor',           icon: '🤝' },
   { v: 'offre_sponsorizzazione', l: 'Offre Sponsorizzazione', icon: '💼' },
+  { v: 'gara', l: 'Gara', icon: '🏃' },
 ]
 
 interface Props { adminId: string }

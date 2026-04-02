@@ -38,6 +38,7 @@ const TIPO_CONFIG: Record<string, { label: string; icon: React.ReactNode; bg: st
   cerca_amichevole:   { label: 'Cerco amichevole',       icon: <Handshake size={11} />, bg: '#ede9fb', text: '#5a2a9e' },
   cerca_sponsor:      { label: 'Cerca Sponsor',          icon: <span>🤝</span>,         bg: '#fff7ed', text: '#9a3412' },
   offre_sponsorizzazione: { label: 'Offre Sponsorizzazione', icon: <span>💼</span>,     bg: '#fef9c3', text: '#854d0e' },
+  gara:               { label: 'Gara',                  icon: <span>🏃</span>,         bg: '#fef2f2', text: '#991b1b' },
 }
 
 const LIVELLO_CONFIG: Record<string, { label: string; color: string }> = {
@@ -108,6 +109,7 @@ export default function AnnunciListV2({ annunci, total, isGuest, isAdmin, filtri
           { color: '#16a34a', label: '🏋️ Preparatore' },
           { color: '#ca8a04', label: '🟨 Arbitro' },
           { color: '#3b82f6', label: '📋 Allenatore' },
+          { color: '#e11d48', label: '🏃 Atletica / Gara' },
         ].map(({ color, label }) => (
           <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <div style={{ width: 12, height: 12, borderRadius: 3, background: color, flexShrink: 0 }} />
@@ -210,6 +212,7 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
     // Bordo Arancio: Amichevole
     if (ann.tipo === 'amichevole' || ann.tipo === 'cerca_amichevole' || ann.tipo === 'cerca_torneo') return { border: '2px solid #ea580c', topBar: 'linear-gradient(90deg, #ea580c, #fb923c)', glow: '0 0 0 1px #fed7aa' }
     // Bordo Oro/Ambra: Sponsor
+    if (ann.tipo === 'gara') return { border: '2px solid #e11d48', topBar: 'linear-gradient(90deg, #e11d48, #fb7185)', glow: '0 0 0 1px #fecdd3' }
     if (ann.tipo === 'cerca_sponsor') return { border: '2px solid #d97706', topBar: 'linear-gradient(90deg, #d97706, #fbbf24)', glow: '0 0 0 1px #fde68a' }
     if (ann.tipo === 'offre_sponsorizzazione') return { border: '2px solid #ca8a04', topBar: 'linear-gradient(90deg, #ca8a04, #facc15)', glow: '0 0 0 1px #fef08a' }
     // Default

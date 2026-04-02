@@ -27,5 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/?sport=preparatore`,  lastModified: now, changeFrequency: 'daily', priority: 0.85 },
     { url: `${base}/?sport=arbitro`,      lastModified: now, changeFrequency: 'daily', priority: 0.85 },
     { url: `${base}/?sport=allenatore`,   lastModified: now, changeFrequency: 'daily', priority: 0.85 },
+    { url: `${base}/?sport=atletica`,     lastModified: now, changeFrequency: 'daily', priority: 0.85 },
+    { url: `${base}/?tipo=gara`,          lastModified: now, changeFrequency: 'daily', priority: 0.80 },
   ]
 }
