@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { User, Bell, Eye, Check, Trash2, MapPin, Shield, MessageCircle, FileText, ChevronRight } from 'lucide-react'
-import { SPORTLABELS } from '@/types'
+import { SPORT_LABELS } from '@/types'
 import type { AlertConfig } from '@/types'
 
 interface ProfiloClientProps {
@@ -15,9 +15,9 @@ export default function ProfiloClient({ utente, alerts: initialAlerts }: Profilo
   const [alerts, setAlerts] = useState(initialAlerts)
   const [statoAnnuncio, setStatoAnnuncio] = useState(utente.statoAnnuncio)
   const [mostraAlias, setMostraAlias] = useState(utente.mostraAliasInChat)
-  const [nascondiRuolo, setNascondiRuolo] = useState(utente.nascondiRuolo ?? false)
-  const [descrizione, setDescrizione] = useState(utente.descrizione)
-  const [notificheEmailChat, setNotificheEmailChat] = useState(utente.notificheEmailChat ?? false)
+  const [nascondiRuolo, setNascondiRuolo] = useState(utente.nascondiRuolo || false)
+  const [descrizione, setDescrizione] = useState(utente.descrizione || '')
+  const [notificheEmailChat, setNotificheEmailChat] = useState(utente.notificheEmailChat !== false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
@@ -43,53 +43,48 @@ export default function ProfiloClient({ utente, alerts: initialAlerts }: Profilo
   }
 
   return (
-    <div style={{ maxWidth: 780, margin: '0 auto', padding: '24px 20px' }}>
+    <div style={{ maxWidth: 680, margin: '0 auto', padding: '0 0 40px' }}>
 
       {/* Header profilo */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28 }}>
-        <div style={{
-          width: 64, height: 64, borderRadius: '50%',
-          background: 'var(--ms-green-light)', color: 'var(--ms-green)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 24, fontWeight: 700
-        }}>
-          {utente.alias[0].toUpperCase()}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '20px 0 16px', borderBottom: '1px solid #e8f0f4', marginBottom: 0 }}>
+        <div style={{ width: 52, height: 52, borderRadius: utente.tipo === 'societa' ? 10 : '50%', background: 'var(--ms-green)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 800, flexShrink: 0 }}>
+          {utente.alias?.[0]?.toUpperCase() || '?'}
         </div>
         <div>
-          <h1 style={{ fontFamily: 'Barlow Condensed, sans-serif', fontSize: 26, fontWeight: 700, margin: 0 }}>
+          <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 22, fontWeight: 800, margin: 0, color: '#1e3a8a' }}>
             {utente.alias}
-          </h1>
+          </h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-            <span style={{
-              fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px',
-              background: 'var(--ms-green-light)', color: 'var(--ms-green)', padding: '2px 8px', borderRadius: 10
-            }}>
+            <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 10, background: '#d1fae5', color: '#065f46', fontWeight: 700, textTransform: 'uppercase' }}>
               {utente.tipo === 'atleta' ? 'Atleta' : utente.tipo === 'societa' ? 'Società' : 'Staff'}
             </span>
-            <span style={{ fontSize: 12, color: '#9ca3af', display: 'flex', alignItems: 'center', gap: 3 }}>
-              <MapPin size={11} />{utente.comune}, {utente.regione}
+            <span style={{ fontSize: 12, color: '#6b7280', display: 'flex', alignItems: 'center', gap: 3 }}>
+              <MapPin size={11} /> {utente.comune}, {utente.regione}
             </span>
           </div>
         </div>
       </div>
 
       {/* Tab nav */}
-      <div style={{ display: 'flex', gap: 2, borderBottom: '1px solid #e5e7eb', marginBottom: 24, overflowX: 'auto' }}>
+      <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #e8f0f4', marginBottom: 20, overflowX: 'auto' }}>
         {[
           { id: 'profilo', label: 'Profilo', icon: <User size={14} /> },
           { id: 'visibilita', label: 'Visibilità', icon: <Eye size={14} /> },
           { id: 'alert', label: `Alert ${alerts.length}`, icon: <Bell size={14} /> },
           { id: 'privacy', label: 'Privacy', icon: <Shield size={14} /> },
         ].map(t => (
-          <button key={t.id} onClick={() => setTab(t.id as any)} style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '9px 14px', background: 'none', border: 'none',
-            borderBottom: `2px solid ${tab === t.id ? 'var(--ms-green)' : 'transparent'}`,
-            color: tab === t.id ? 'var(--ms-green)' : '#6b7280',
-            fontWeight: tab === t.id ? 600 : 400,
-            fontSize: 13, cursor: 'pointer', fontFamily: 'Barlow, sans-serif',
-            marginBottom: -1, whiteSpace: 'nowrap',
-          }}>
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id as any)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px',
+              background: 'none', border: 'none',
+              borderBottom: `2px solid ${tab === t.id ? 'var(--ms-green)' : 'transparent'}`,
+              color: tab === t.id ? 'var(--ms-green)' : '#6b7280',
+              fontWeight: tab === t.id ? 600 : 400, fontSize: 13, cursor: 'pointer',
+              fontFamily: 'Barlow, sans-serif', marginBottom: -1, whiteSpace: 'nowrap',
+            }}
+          >
             {t.icon} {t.label}
           </button>
         ))}
@@ -97,34 +92,38 @@ export default function ProfiloClient({ utente, alerts: initialAlerts }: Profilo
 
       {/* TAB PROFILO */}
       {tab === 'profilo' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
           {/* Dati pubblici */}
-          <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 20 }}>
-            <h3 style={{ fontWeight: 600, fontSize: 15, margin: '0 0 16px', color: '#111' }}>Dati pubblici</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div className="ms-card" style={{ padding: '16px 18px' }}>
+            <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 16, fontWeight: 700, margin: '0 0 12px', color: '#1e3a8a' }}>
+              Dati pubblici
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {[
                 { l: 'Alias', v: utente.alias },
                 { l: 'Anno di nascita', v: utente.annoDiNascita },
                 { l: 'Comune', v: utente.comune },
                 { l: 'Regione', v: utente.regione },
-                { l: 'Sport', v: utente.sport.map((s: string) => SPORTLABELS[s as keyof typeof SPORTLABELS] || s).join(', ') },
-                { l: 'Ruoli', v: utente.ruoli.join(', ') },
-                { l: 'Categorie', v: utente.categoria.join(', ') },
+                { l: 'Sport', v: utente.sport?.map((s: string) => SPORT_LABELS[s as keyof typeof SPORT_LABELS] || s).join(', ') },
+                { l: 'Ruoli', v: utente.ruoli?.join(', ') },
+                { l: 'Categorie', v: utente.categoria?.join(', ') },
               ].map(({ l, v }) => (
-                <div key={l} style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 10, borderBottom: '1px solid #f9fafb' }}>
-                  <span style={{ fontSize: 13, color: '#6b7280', fontWeight: 500 }}>{l}</span>
-                  <span style={{ fontSize: 13, color: '#111', textAlign: 'right', maxWidth: '60%' }}>{String(v)}</span>
+                <div key={l} style={{ display: 'flex', gap: 8, fontSize: 13 }}>
+                  <span style={{ color: '#6b7280', minWidth: 130, flexShrink: 0 }}>{l}</span>
+                  <span style={{ fontWeight: 600, color: '#1e293b' }}>{String(v || '—')}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Dati privati */}
-          <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 20 }}>
-            <h3 style={{ fontWeight: 600, fontSize: 15, margin: '0 0 4px', color: '#111' }}>Dati privati</h3>
-            <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 16px' }}>Visibili solo all&apos;amministratore</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div className="ms-card" style={{ padding: '16px 18px' }}>
+            <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 16, fontWeight: 700, margin: '0 0 4px', color: '#1e3a8a' }}>
+              Dati privati
+            </h3>
+            <p style={{ fontSize: 11, color: '#9ca3af', margin: '0 0 12px' }}>Visibili solo all'amministratore</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {[
                 { l: 'Nome completo', v: `${utente.nome} ${utente.cognome}` },
                 { l: 'Data di nascita', v: utente.dataNascita },
@@ -132,13 +131,11 @@ export default function ProfiloClient({ utente, alerts: initialAlerts }: Profilo
                 { l: 'Telefono', v: utente.telefono },
                 { l: 'Codice fiscale', v: utente.codiceFiscale },
               ].map(({ l, v, verified }) => (
-                <div key={l} style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 10, borderBottom: '1px solid #f9fafb' }}>
-                  <span style={{ fontSize: 13, color: '#6b7280', fontWeight: 500 }}>{l}</span>
-                  <span style={{ fontSize: 13, color: '#111', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    {String(v)}
-                    {verified === true && <Check size={12} style={{ color: '#059669' }} />}
-                    {verified === false && <span style={{ fontSize: 10, color: '#f59e0b' }}>Non verificata</span>}
-                  </span>
+                <div key={l} style={{ display: 'flex', gap: 8, fontSize: 13, alignItems: 'center' }}>
+                  <span style={{ color: '#6b7280', minWidth: 130, flexShrink: 0 }}>{l}</span>
+                  <span style={{ fontWeight: 600, color: '#1e293b' }}>{String(v || '—')}</span>
+                  {verified === true && <Check size={13} color="#059669" />}
+                  {verified === false && <span style={{ fontSize: 10, color: '#dc2626', background: '#fee2e2', padding: '1px 6px', borderRadius: 6 }}>Non verificata</span>}
                 </div>
               ))}
             </div>
@@ -149,195 +146,219 @@ export default function ProfiloClient({ utente, alerts: initialAlerts }: Profilo
 
       {/* TAB VISIBILITA */}
       {tab === 'visibilita' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 500 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
           {/* Link curriculum */}
-          <Link href="/profilo/curriculum" style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: 'linear-gradient(135deg, var(--ms-green) 0%, var(--ms-green-dark) 100%)',
-            borderRadius: 12, padding: '16px 20px', textDecoration: 'none'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{
-                width: 40, height: 40, borderRadius: 10,
-                background: 'rgba(255,255,255,0.15)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}>
-                <FileText size={20} style={{ color: '#fff' }} />
-              </div>
+          <Link href="/profilo/curriculum" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', background: '#f0f9f4', border: '1.5px solid #a7f3d0', borderRadius: 10, textDecoration: 'none', color: '#065f46' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <FileText size={18} color="#059669" />
               <div>
-                <div style={{ color: '#fff', fontWeight: 700, fontSize: 15 }}>Curriculum Sportivo</div>
-                <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12 }}>Esperienze, titoli, qualifiche</div>
+                <p style={{ margin: 0, fontWeight: 700, fontSize: 14 }}>Curriculum Sportivo</p>
+                <p style={{ margin: 0, fontSize: 12, color: '#6b7280' }}>Esperienze, titoli, qualifiche</p>
               </div>
             </div>
-            <ChevronRight size={20} style={{ color: 'rgba(255,255,255,0.7)' }} />
+            <ChevronRight size={18} color="#059669" />
           </Link>
 
           {/* Impostazioni visibilità */}
-          <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 24 }}>
-            <h3 style={{ fontWeight: 600, fontSize: 16, margin: '0 0 20px' }}>Impostazioni visibilità</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div className="ms-card" style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 18 }}>
+            <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 16, fontWeight: 700, margin: 0, color: '#1e3a8a' }}>
+              Impostazioni visibilità
+            </h3>
 
-              {/* Stato annuncio */}
-              <div>
-                <label className="ms-label">Il mio stato</label>
-                <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 10px' }}>Controlla se il tuo profilo è visibile agli altri utenti</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {[
-                    { v: 'disponibile', l: 'Disponibile', desc: 'Visibile, sono disponibile per contatti', color: '#059669', bg: '#d1fae5' },
-                    { v: 'cerca', l: 'Cerco squadra', desc: 'Visibile, sto cercando attivamente', color: '#2563eb', bg: '#dbeafe' },
-                    { v: 'nascosto', l: 'Non visibile', desc: 'Il tuo profilo non compare negli annunci', color: '#6b7280', bg: '#f3f4f6' },
-                  ].map(opt => (
-                    <label key={opt.v} style={{
-                      display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px',
-                      border: `1.5px solid ${statoAnnuncio === opt.v ? opt.color : '#e5e7eb'}`,
-                      borderRadius: 10, cursor: 'pointer',
-                      background: statoAnnuncio === opt.v ? opt.bg : '#fff'
-                    }}>
-                      <input type="radio" name="stato" value={opt.v} checked={statoAnnuncio === opt.v}
-                        onChange={() => setStatoAnnuncio(opt.v)} style={{ accentColor: opt.color }} />
-                      <div>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: opt.color }}>{opt.l}</div>
-                        <div style={{ fontSize: 12, color: '#6b7280' }}>{opt.desc}</div>
-                      </div>
-                    </label>
-                  ))}
-                </div>
+            {/* Stato annuncio */}
+            <div>
+              <label className="ms-label">Il mio stato</label>
+              <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 10px' }}>Controlla se il tuo profilo è visibile agli altri utenti</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {[
+                  { v: 'disponibile', l: 'Disponibile', desc: 'Visibile, sono disponibile per contatti', color: '#059669', bg: '#d1fae5' },
+                  { v: 'cerca', l: 'Cerco squadra', desc: 'Visibile, sto cercando attivamente', color: '#2563eb', bg: '#dbeafe' },
+                  { v: 'nascosto', l: 'Non visibile', desc: 'Il tuo profilo non compare negli annunci', color: '#6b7280', bg: '#f3f4f6' },
+                ].map(opt => (
+                  <label
+                    key={opt.v}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, border: `1.5px solid ${statoAnnuncio === opt.v ? opt.color : '#e5e7eb'}`, background: statoAnnuncio === opt.v ? opt.bg : '#fff', cursor: 'pointer' }}
+                  >
+                    <input
+                      type="radio"
+                      name="stato"
+                      value={opt.v}
+                      checked={statoAnnuncio === opt.v}
+                      onChange={() => setStatoAnnuncio(opt.v)}
+                      style={{ accentColor: opt.color }}
+                    />
+                    <div>
+                      <p style={{ margin: 0, fontWeight: 700, fontSize: 13, color: opt.color }}>{opt.l}</p>
+                      <p style={{ margin: 0, fontSize: 11, color: '#6b7280' }}>{opt.desc}</p>
+                    </div>
+                  </label>
+                ))}
               </div>
+            </div>
 
-              {/* Descrizione */}
-              <div>
-                <label className="ms-label">Descrizione annuncio</label>
-                <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 8px' }}>Breve testo visibile sulla tua card (max 140 caratteri)</p>
-                <textarea className="ms-input" rows={3} maxLength={140}
-                  style={{ resize: 'none', fontFamily: 'Barlow, sans-serif', fontSize: 13 }}
-                  value={descrizione} onChange={e => setDescrizione(e.target.value)}
-                  placeholder="Es. Centrocampista con 10 anni di esperienza..." />
-                <p style={{ fontSize: 11, color: '#9ca3af', margin: '4px 0 0', textAlign: 'right' }}>{descrizione?.length ?? 0}/140</p>
+            {/* Descrizione */}
+            <div>
+              <label className="ms-label">Descrizione annuncio</label>
+              <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 8px' }}>Breve testo visibile sulla tua card (max 140 caratteri)</p>
+              <textarea
+                className="ms-input"
+                rows={3}
+                maxLength={140}
+                style={{ resize: 'none', fontFamily: 'Barlow, sans-serif', fontSize: 13 }}
+                value={descrizione}
+                onChange={e => setDescrizione(e.target.value)}
+                placeholder="Es. Centrocampista con 10 anni di esperienza..."
+              />
+              <p style={{ fontSize: 11, color: '#9ca3af', margin: '4px 0 0', textAlign: 'right' }}>{descrizione?.length ?? 0}/140</p>
+            </div>
+
+            {/* Nascondi ruolo */}
+            <div>
+              <label className="ms-label">Visibilità del ruolo</label>
+              <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 10px' }}>Scegli se mostrare il tuo ruolo nella card</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {[
+                  { v: false, l: 'Mostra il ruolo', desc: 'Il tuo ruolo è visibile sulla card annuncio' },
+                  { v: true, l: 'Nascondi il ruolo', desc: 'Il ruolo non viene mostrato pubblicamente' },
+                ].map(opt => (
+                  <label
+                    key={String(opt.v)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, border: `1.5px solid ${nascondiRuolo === opt.v ? 'var(--ms-green)' : '#e5e7eb'}`, background: nascondiRuolo === opt.v ? '#f0fdf4' : '#fff', cursor: 'pointer' }}
+                  >
+                    <input
+                      type="radio"
+                      name="nascondiRuolo"
+                      checked={nascondiRuolo === opt.v}
+                      onChange={() => setNascondiRuolo(opt.v)}
+                      style={{ accentColor: 'var(--ms-green)' }}
+                    />
+                    <div>
+                      <p style={{ margin: 0, fontWeight: 700, fontSize: 13 }}>{opt.l}</p>
+                      <p style={{ margin: 0, fontSize: 11, color: '#6b7280' }}>{opt.desc}</p>
+                    </div>
+                  </label>
+                ))}
               </div>
-
-              {/* Nascondi ruolo */}
-              <div>
-                <label className="ms-label">Visibilità del ruolo</label>
-                <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 10px' }}>Scegli se mostrare il tuo ruolo nella card</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {
-                            {mediaList.length > 0 && (
-          <div style={{ marginBottom: 10, background: '#faf5ff', border: '1px solid #e9d5ff', borderRadius: 10, padding: '10px 12px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#6d28d9', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span>📁</span> Allegati ({mediaList.length})
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {mediaList.map((m, i) => {
-                const id = estraiIdDrive(m.url)
-                const embedUrl = id ? `https://drive.google.com/file/d/${id}/preview` : m.url
-                const imgUrl = id ? `https://lh3.googleusercontent.com/d/${id}` : m.url
-                const icona = m.tipo === 'pdf' ? '📄' : m.tipo === 'immagine' ? '🖼️' : '🎬'
-                const label = m.tipo === 'pdf' ? 'PDF' : m.tipo === 'immagine' ? 'Foto' : 'Video'
-                const isAperto = mediaAperto === i
-                return (
-                  <div key={i} style={{ borderRadius: 8, overflow: 'hidden', border: '1px solid #e9d5ff', background: '#fff' }}>
-                    <button
-                      type="button"
-                      onClick={() => setMediaAperto(isAperto ? null : i)}
-                      style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', background: '#f5f3ff', border: 'none', cursor: 'pointer', fontFamily: 'Barlow, sans-serif' }}
-                    >
-                      <span style={{ fontSize: 11, fontWeight: 600, color: '#4c1d95', display: 'flex', alignItems: 'center', gap: 5 }}>
-                        {icona} {m.titolo || label}
-                      </span>
-                      <span style={{ fontSize: 10, color: '#7c3aed', fontWeight: 700 }}>{isAperto ? '▲ chiudi' : '▼ anteprima'}</span>
-                    </button>
-                    {isAperto && (
-                      <>
-                        {m.tipo === 'immagine' ? (
-                          <img
-                            src={imgUrl}
-                            alt={m.titolo || `Immagine ${i + 1}`}
-                            style={{ width: '100%', maxHeight: 220, objectFit: 'cover', display: 'block' }}
-                          />
-                        ) : (
-                          <iframe
-                            src={embedUrl}
-                            style={{ width: '100%', height: m.tipo === 'pdf' ? 280 : 200, border: 'none', display: 'block' }}
-                            allow="autoplay"
-                            title={m.titolo || `Media ${i + 1}`}
-                          />
-                        )}
-                        <div style={{ padding: '4px 10px', background: '#f9fafb', display: 'flex', justifyContent: 'flex-end' }}>
-                          <a href={m.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: '#6d28d9', textDecoration: 'none', fontWeight: 600 }}>
-                            ↗ Apri in Google Drive
-                          </a>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
 
-        {((ann as any).linkFacebook || (ann as any).linkInstagram || (ann as any).linkYouTube || (ann as any).linkSito) && (
-          <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
-            {(ann as any).linkFacebook && (
-              <a href={(ann as any).linkFacebook} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, padding: '3px 8px', borderRadius: 10, background: '#e7f0fd', color: '#1877f2', border: '1px solid #c3d9f8', textDecoration: 'none', fontWeight: 600 }}>
-                📘 Facebook
-              </a>
-            )}
-            {(ann as any).linkInstagram && (
-              <a href={(ann as any).linkInstagram} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, padding: '3px 8px', borderRadius: 10, background: '#fce4ec', color: '#e1306c', border: '1px solid #f8bbd0', textDecoration: 'none', fontWeight: 600 }}>
-                📸 Instagram
-              </a>
-            )}
-            {(ann as any).linkYouTube && (
-              <a href={(ann as any).linkYouTube} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, padding: '3px 8px', borderRadius: 10, background: '#fde8e8', color: '#ff0000', border: '1px solid #fcc', textDecoration: 'none', fontWeight: 600 }}>
-                ▶️ YouTube
-              </a>
-            )}
-            {(ann as any).linkSito && (
-              <a href={(ann as any).linkSito} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, padding: '3px 8px', borderRadius: 10, background: '#e8f3f6', color: '#2a6e78', border: '1px solid #b0d4e0', textDecoration: 'none', fontWeight: 600 }}>
-                🌐 Sito web
-              </a>
-            )}
-          </div>
-        )}
-
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f0f4f5', paddingTop: 10 }}>
-          <span style={{ fontSize: 10, color: '#b0bec5' }}>
-            {new Date(ann.bumpedAt).toLocaleDateString('it-IT', { day: '2-digit', month: 'short' })}
-          </span>
-          {isGuest ? (
-            <Link
-              href="/registrazione"
-              title="Registrati per contattare"
-              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 14px', border: '1.5px solid #d0dde2', borderRadius: 8, background: hovered ? '#f0f7fa' : 'transparent', color: '#4a7c8e', fontSize: 12, textDecoration: 'none', fontWeight: 600, transition: 'all 0.15s' }}
-            >
-              <Lock size={11} /> {hovered ? 'Registrati per contattare' : 'Chat'}
-            </Link>
-          ) : (ann as any).chiuso ? (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', border: '1px solid #f0c060', borderRadius: 8, background: '#fef3e2', color: '#c07820', fontSize: 11, fontWeight: 600 }}>
-              🔒 Non disponibile
-            </span>
-          ) : (
+            {/* Salva visibilità */}
             <button
-              onClick={onChat}
-              style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 14px', border: `1.5px solid ${bs.border.split(' ')[2] || tc.border}`, borderRadius: 8, background: hovered ? (bs.topBar.includes('gradient') ? bs.topBar : tc.bg) : 'transparent', color: hovered ? '#fff' : tc.text, fontSize: 12, cursor: 'pointer', fontWeight: 700, transition: 'all 0.15s', fontFamily: 'Barlow, sans-serif' }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = bs.topBar.includes('gradient') ? bs.topBar : tc.bg
-                e.currentTarget.style.color = '#fff'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'transparent'
-                e.currentTarget.style.color = tc.text
-              }}
+              className="btn-primary"
+              onClick={() => salvaImpostazioni({ statoAnnuncio, nascondiRuolo, descrizione })}
+              disabled={saving}
+              style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: 6 }}
             >
-              <MessageCircle size={13} /> {hovered ? 'Contatta ora' : 'Chat'}
+              {saving ? 'Salvo...' : saved ? <><Check size={14} /> Salvato!</> : 'Salva impostazioni'}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* TAB ALERT */}
+      {tab === 'alert' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+            <div>
+              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 16, fontWeight: 700, margin: 0, color: '#1e3a8a' }}>I tuoi alert</h3>
+              <p style={{ fontSize: 12, color: '#9ca3af', margin: '2px 0 0' }}>Ricevi email quando arrivano nuovi annunci con questi criteri</p>
+            </div>
+          </div>
+
+          {alerts.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px 20px', color: '#9ca3af' }}>
+              <Bell size={32} style={{ margin: '0 auto 10px', opacity: 0.3 }} />
+              <p style={{ margin: 0, fontWeight: 500 }}>Nessun alert impostato.</p>
+              <p style={{ margin: '6px 0 0', fontSize: 13 }}>Clicca "Imposta alert" dalla pagina degli annunci.</p>
+            </div>
+          ) : (
+            alerts.map(alert => (
+              <div key={alert.id} className="ms-card" style={{ padding: '12px 14px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
+                <div style={{ fontSize: 12, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  {alert.sport && <span><strong>Sport:</strong> {SPORT_LABELS[alert.sport as keyof typeof SPORT_LABELS] || alert.sport}</span>}
+                  {alert.regione && <span><strong>Regione:</strong> {alert.regione}</span>}
+                  {alert.comune && <span><strong>Comune:</strong> {alert.comune}</span>}
+                  {alert.tipo && <span><strong>Tipo:</strong> {alert.tipo}</span>}
+                  {alert.ruolo && <span><strong>Ruolo:</strong> {alert.ruolo}</span>}
+                </div>
+                <button
+                  onClick={() => eliminaAlert(alert.id)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', flexShrink: 0, padding: 4 }}
+                  title="Elimina alert"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+            ))
           )}
         </div>
-      </div>
+      )}
+
+      {/* TAB PRIVACY */}
+      {tab === 'privacy' && (
+        <div className="ms-card" style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 16, fontWeight: 700, margin: 0, color: '#1e3a8a' }}>
+            Impostazioni privacy
+          </h3>
+
+          {/* Alias in chat */}
+          <div>
+            <label className="ms-label">Nome in chat</label>
+            <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 10px' }}>Come appari nelle conversazioni</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {[
+                { v: true, l: 'Usa il mio alias', desc: `Appari come "${utente.alias}"` },
+                { v: false, l: 'Usa il nome completo', desc: `Appari come "${utente.nome} ${utente.cognome}"` },
+              ].map(opt => (
+                <label
+                  key={String(opt.v)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, border: `1.5px solid ${mostraAlias === opt.v ? 'var(--ms-green)' : '#e5e7eb'}`, background: mostraAlias === opt.v ? '#f0fdf4' : '#fff', cursor: 'pointer' }}
+                >
+                  <input
+                    type="radio"
+                    name="mostraAlias"
+                    checked={mostraAlias === opt.v}
+                    onChange={() => setMostraAlias(opt.v)}
+                    style={{ accentColor: 'var(--ms-green)' }}
+                  />
+                  <div>
+                    <p style={{ margin: 0, fontWeight: 700, fontSize: 13 }}>{opt.l}</p>
+                    <p style={{ margin: 0, fontSize: 11, color: '#6b7280' }}>{opt.desc}</p>
+                  </div>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Notifiche email chat */}
+          <div>
+            <label className="ms-label">Notifiche email chat</label>
+            <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 10px' }}>Ricevi un'email quando qualcuno ti scrive in chat</p>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={notificheEmailChat}
+                onChange={e => setNotificheEmailChat(e.target.checked)}
+                style={{ accentColor: 'var(--ms-green)', width: 16, height: 16 }}
+              />
+              <span style={{ fontSize: 13, fontWeight: 600 }}>
+                {notificheEmailChat ? 'Notifiche attive' : 'Notifiche disattivate'}
+              </span>
+            </label>
+          </div>
+
+          {/* Salva privacy */}
+          <button
+            className="btn-primary"
+            onClick={() => salvaImpostazioni({ mostraAliasInChat: mostraAlias, notificheEmailChat })}
+            disabled={saving}
+            style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: 6 }}
+          >
+            {saving ? 'Salvo...' : saved ? <><Check size={14} /> Salvato!</> : 'Salva impostazioni'}
+          </button>
+        </div>
+      )}
+
     </div>
   )
 }
-
-
