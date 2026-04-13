@@ -2,26 +2,46 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Send, Loader2, Check } from 'lucide-react'
+import { ArrowLeft, Send, Loader2, Check, X, Plus } from 'lucide-react'
 import { SPORT_LABELS, RUOLI_PER_SPORT, CATEGORIE, REGIONI_ITALIA_SELECT } from '@/types'
 import type { Sport, TipoAnnuncio } from '@/types'
 
 interface Props { userId: string; userTipo: string }
 
+// ── Tipi media Google Drive ───────────────────────────────────────────────────
+interface DriveMedia {
+  url: string
+  tipo: 'video' | 'immagine' | 'pdf'
+  titolo: string
+}
+
+function rilevaTipo(url: string): 'video' | 'immagine' | 'pdf' {
+  const u = url.toLowerCase()
+  if (u.includes('.pdf') || u.includes('pdf')) return 'pdf'
+  if (u.includes('.mp4') || u.includes('.mov') || u.includes('.avi') || u.includes('video')) return 'video'
+  return 'immagine'
+}
+
+function isValidDriveUrl(url: string): boolean {
+  if (!url.trim()) return false
+  return url.includes('drive.google.com') || url.includes('docs.google.com')
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 const TIPI_BASE: { v: TipoAnnuncio; l: string; desc: string; icon: string }[] = [
-  { v: 'ricerca_squadra',        l: 'Cerco squadra',           desc: 'Sei un atleta che vuole trovare una squadra', icon: '🔍' },
-  { v: 'disponibilita',          l: 'Sono disponibile',        desc: 'Offri la tua disponibilità a squadre e società', icon: '✋' },
-  { v: 'cerca_sponsor',          l: 'Cerca Sponsor',           desc: 'Cerchi uno sponsor per la tua attività sportiva', icon: '🤝' },
-  { v: 'offre_sponsorizzazione',  l: 'Offre Sponsorizzazione',  desc: "Sei un'azienda e vuoi sponsorizzare squadre sportive", icon: '💼' },
+  { v: 'ricerca_squadra',       l: 'Cerco squadra',          desc: 'Sei un atleta che vuole trovare una squadra', icon: '🔍' },
+  { v: 'disponibilita',         l: 'Sono disponibile',       desc: 'Offri la tua disponibilità a squadre e società', icon: '✋' },
+  { v: 'cerca_sponsor',         l: 'Cerca Sponsor',          desc: 'Cerchi uno sponsor per la tua attività sportiva', icon: '🤝' },
+  { v: 'offre_sponsorizzazione', l: 'Offre Sponsorizzazione', desc: "Sei un'azienda e vuoi sponsorizzare squadre sportive", icon: '💼' },
 ]
 const TIPI_SOCIETA: { v: TipoAnnuncio; l: string; desc: string; icon: string }[] = [
-  { v: 'cerca_atleti',           l: 'Cerco atleti',            desc: 'La società cerca giocatori, allenatori o staff', icon: '🔎' },
-  { v: 'torneo',                 l: 'Organizza torneo',        desc: 'Organizzi un torneo e cerchi squadre partecipanti', icon: '🏆' },
-  { v: 'amichevole',             l: 'Organizza amichevole',    desc: 'Cerchi squadre per partite amichevoli', icon: '🤝' },
-  { v: 'cerca_torneo',           l: 'Cerco torneo',            desc: 'Vuoi iscrivere la tua squadra ad un torneo', icon: '🔍' },
-  { v: 'cerca_amichevole',       l: 'Cerco amichevole',        desc: 'Cerchi avversari per partite amichevoli', icon: '🤝' },
-  { v: 'cerca_sponsor',          l: 'Cerca Sponsor',           desc: 'La società cerca uno sponsor commerciale', icon: '🤝' },
-  { v: 'offre_sponsorizzazione',  l: 'Offre Sponsorizzazione',  desc: "Sei un'azienda e vuoi sponsorizzare squadre sportive", icon: '💼' },
+  { v: 'cerca_atleti',          l: 'Cerco atleti',           desc: 'La società cerca giocatori, allenatori o staff', icon: '🔎' },
+  { v: 'torneo',                l: 'Organizza torneo',       desc: 'Organizzi un torneo e cerchi squadre partecipanti', icon: '🏆' },
+  { v: 'amichevole',            l: 'Organizza amichevole',   desc: 'Cerchi squadre per partite amichevoli', icon: '🤝' },
+  { v: 'cerca_torneo',          l: 'Cerco torneo',           desc: 'Vuoi iscrivere la tua squadra ad un torneo', icon: '🔍' },
+  { v: 'cerca_amichevole',      l: 'Cerco amichevole',       desc: 'Cerchi avversari per partite amichevoli', icon: '🤝' },
+  { v: 'cerca_sponsor',         l: 'Cerca Sponsor',          desc: 'La società cerca uno sponsor commerciale', icon: '🤝' },
+  { v: 'offre_sponsorizzazione', l: 'Offre Sponsorizzazione', desc: "Sei un'azienda e vuoi sponsorizzare squadre sportive", icon: '💼' },
 ]
 
 export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
@@ -35,11 +55,37 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
     nSquadreRicercate: '', dataInizio: '', dataFine: '', luogo: '', kmRaggio: '30',
   })
 
-  // ── Stato link Google Drive ──────────────────────────────────────────────
-  const [driveLinks, setDriveLinks] = useState<string[]>([''])
-  const addDriveLink    = () => { if (driveLinks.length < 5) setDriveLinks(p => [...p, '']) }
-  const removeDriveLink = (i: number) => setDriveLinks(p => p.filter((_, idx) => idx !== i))
-  const updateDriveLink = (i: number, val: string) => setDriveLinks(p => p.map((l, idx) => idx === i ? val : l))
+  // ── Stato media Google Drive ──────────────────────────────────────────────
+  const [driveMedia, setDriveMedia] = useState<DriveMedia[]>([
+    { url: '', tipo: 'immagine', titolo: '' }
+  ])
+  const [driveErrors, setDriveErrors] = useState<string[]>([''])
+
+  const addDriveMedia = () => {
+    if (driveMedia.length < 5) {
+      setDriveMedia(p => [...p, { url: '', tipo: 'immagine', titolo: '' }])
+      setDriveErrors(p => [...p, ''])
+    }
+  }
+  const removeDriveMedia = (i: number) => {
+    setDriveMedia(p => p.filter((_, idx) => idx !== i))
+    setDriveErrors(p => p.filter((_, idx) => idx !== i))
+  }
+  const updateDriveMedia = (i: number, field: keyof DriveMedia, val: string) => {
+    setDriveMedia(p => p.map((m, idx) => {
+      if (idx !== i) return m
+      const updated = { ...m, [field]: val }
+      if (field === 'url' && val.trim()) updated.tipo = rilevaTipo(val)
+      return updated
+    }))
+    if (field === 'url') {
+      setDriveErrors(p => p.map((e, idx) => {
+        if (idx !== i) return e
+        if (!val.trim()) return ''
+        return isValidDriveUrl(val) ? '' : 'Inserisci un link Google Drive valido'
+      }))
+    }
+  }
   // ─────────────────────────────────────────────────────────────────────────
 
   const upd = (k: string, v: any) => setForm((f: any) => ({ ...f, [k]: v }))
@@ -58,13 +104,24 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
     if (!form.regione) { setError('Seleziona la regione'); return }
     if (!form.comune.trim()) { setError('Inserisci il comune'); return }
 
+    const mediaValidi = driveMedia.filter(m => m.url.trim())
+    const linkInvalidi = mediaValidi.filter(m => !isValidDriveUrl(m.url))
+    if (linkInvalidi.length > 0) {
+      setError('Uno o più link Google Drive non sono validi')
+      return
+    }
+
     setLoading(true); setError('')
     const res = await fetch('/api/annunci-v2', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         ...form,
-        mediaGoogleDrive: driveLinks.filter(l => l.trim().length > 0),
+        mediaGoogleDrive: mediaValidi.map(m => ({
+          url: m.url.trim(),
+          tipo: m.tipo,
+          titolo: m.titolo.trim(),
+        })),
       }),
     })
     const data = await res.json()
@@ -328,43 +385,82 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
           </p>
         </div>
 
-        {/* ── Media Google Drive ─────────────────────────────────────────── */}
+        {/* ── Media Google Drive ─────────────────────────────────────────────── */}
         <div style={{ background: '#f8f4ff', border: '1.5px solid #d8b4fe', borderRadius: 12, padding: '16px 18px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-            <span style={{ fontSize: 18 }}>📁</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <span style={{ fontSize: 20 }}>📁</span>
             <div>
               <span style={{ fontWeight: 700, color: '#6d28d9', fontSize: 14 }}>Video, Foto e PDF da Google Drive</span>
               <span style={{ fontSize: 12, color: '#9ca3af', marginLeft: 8 }}>(opzionali, max 5)</span>
             </div>
           </div>
-          <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 12, lineHeight: 1.5 }}>
-            Carica i file su Google Drive, rendili pubblici con <strong>Chiunque con il link</strong> e incolla il link qui sotto.
+          <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 14, lineHeight: 1.6 }}>
+            Carica i file su Google Drive, aprili e clicca <strong>Condividi → Chiunque con il link</strong>, poi incolla il link qui sotto.
           </p>
-          {driveLinks.map((link, i) => (
-            <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-              <input
-                type="url"
-                placeholder="https://drive.google.com/file/d/..."
-                value={link}
-                onChange={e => updateDriveLink(i, e.target.value)}
-                style={{ flex: 1, padding: '9px 12px', border: '1.5px solid #d8b4fe', borderRadius: 8, fontSize: 13, outline: 'none', background: '#fff', fontFamily: 'Barlow, sans-serif' }}
-              />
-              {driveLinks.length > 1 && (
-                <button type="button" onClick={() => removeDriveLink(i)}
-                  style={{ padding: '8px 12px', background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 700 }}>
-                  ✕
-                </button>
+
+          {driveMedia.map((m, i) => (
+            <div key={i} style={{ marginBottom: 12, background: '#fff', borderRadius: 10, border: '1px solid #e9d5ff', padding: '12px 14px' }}>
+
+              {/* Riga URL */}
+              <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                <input
+                  type="url"
+                  placeholder="https://drive.google.com/file/d/..."
+                  value={m.url}
+                  onChange={e => updateDriveMedia(i, 'url', e.target.value)}
+                  style={{ flex: 1, padding: '8px 12px', border: `1.5px solid ${driveErrors[i] ? '#fca5a5' : '#d8b4fe'}`, borderRadius: 8, fontSize: 13, outline: 'none', background: '#faf5ff', fontFamily: 'Barlow, sans-serif' }}
+                />
+                {driveMedia.length > 1 && (
+                  <button type="button" onClick={() => removeDriveMedia(i)}
+                    style={{ padding: '8px 10px', background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+
+              {/* Errore URL */}
+              {driveErrors[i] && (
+                <p style={{ fontSize: 11, color: '#dc2626', margin: '0 0 8px' }}>⚠️ {driveErrors[i]}</p>
+              )}
+
+              {/* Riga tipo + titolo (visibile solo se URL inserito) */}
+              {m.url.trim() && (
+                <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
+                  <div>
+                    <label style={{ fontSize: 11, color: '#6b7280', fontWeight: 600, display: 'block', marginBottom: 4 }}>Tipo file</label>
+                    <select
+                      value={m.tipo}
+                      onChange={e => updateDriveMedia(i, 'tipo', e.target.value)}
+                      style={{ width: '100%', padding: '6px 8px', borderRadius: 7, border: '1px solid #d8b4fe', fontSize: 12, background: '#faf5ff', color: '#374151', cursor: 'pointer' }}
+                    >
+                      <option value="immagine">🖼️ Immagine / Foto</option>
+                      <option value="video">🎬 Video</option>
+                      <option value="pdf">📄 PDF</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 11, color: '#6b7280', fontWeight: 600, display: 'block', marginBottom: 4 }}>Titolo (opzionale)</label>
+                    <input
+                      type="text"
+                      placeholder="Es. Video highlights, Brochure società..."
+                      value={m.titolo}
+                      onChange={e => updateDriveMedia(i, 'titolo', e.target.value)}
+                      style={{ width: '100%', padding: '6px 10px', borderRadius: 7, border: '1px solid #d8b4fe', fontSize: 12, background: '#faf5ff', fontFamily: 'Barlow, sans-serif', outline: 'none', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                </div>
               )}
             </div>
           ))}
-          {driveLinks.length < 5 && (
-            <button type="button" onClick={addDriveLink}
-              style={{ marginTop: 4, padding: '7px 14px', background: '#ede9fe', color: '#6d28d9', border: '1.5px dashed #a78bfa', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, fontFamily: 'Barlow, sans-serif' }}>
-              + Aggiungi altro file
+
+          {driveMedia.length < 5 && (
+            <button type="button" onClick={addDriveMedia}
+              style={{ padding: '8px 16px', background: '#ede9fe', color: '#6d28d9', border: '1.5px dashed #a78bfa', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, fontFamily: 'Barlow, sans-serif', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Plus size={14} /> Aggiungi altro file
             </button>
           )}
         </div>
-        {/* ──────────────────────────────────────────────────────────────── */}
+        {/* ──────────────────────────────────────────────────────────────────── */}
 
         {/* Link Social */}
         {['admin', 'societa', 'staff'].includes(userTipo) && (
