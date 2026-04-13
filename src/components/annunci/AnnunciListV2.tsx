@@ -10,7 +10,6 @@ import type { Sport } from '@/types'
 import ChatModal from '@/components/chat/ChatModal'
 import AlertModal from '@/components/chat/AlertModal'
 
-
 interface Props {
   annunci: AnnuncioConProfilo[]
   total: number
@@ -35,16 +34,13 @@ const TIPO_CONFIG: Record<string, { label: string; icon: React.ReactNode; bg: st
   torneo:           { label: 'Torneo',           icon: <Trophy size={11} />,    bg: '#fef3e2', text: '#8a5a00' },
   amichevole:       { label: 'Amichevole',       icon: <Handshake size={11} />, bg: '#f0eafb', text: '#6d3d8c' },
   cerca_torneo:     { label: 'Cerco torneo',     icon: <Trophy size={11} />,    bg: '#fff3cd', text: '#7a5000' },
-  cerca_amichevole:   { label: 'Cerco amichevole',       icon: <Handshake size={11} />, bg: '#ede9fb', text: '#5a2a9e' },
-  cerca_sponsor:      { label: 'Cerca Sponsor',          icon: <span>🤝</span>,         bg: '#fff7ed', text: '#9a3412' },
-  offre_sponsorizzazione: { label: 'Offre Sponsorizzazione', icon: <span>💼</span>,     bg: '#fef9c3', text: '#854d0e' },
-  gara:               { label: 'Gara',                  icon: <span>🏃</span>,         bg: '#fef2f2', text: '#991b1b' },
+  cerca_amichevole: { label: 'Cerco amichevole', icon: <Handshake size={11} />, bg: '#ede9fb', text: '#5a2a9e' },
 }
 
 const LIVELLO_CONFIG: Record<string, { label: string; color: string }> = {
-  basso: { label: 'Basso',  color: '#059669' },
-  medio: { label: 'Medio',  color: '#d97706' },
-  alto:  { label: 'Alto',   color: '#dc2626' },
+  basso: { label: 'Basso', color: '#059669' },
+  medio: { label: 'Medio', color: '#d97706' },
+  alto:  { label: 'Alto',  color: '#dc2626' },
 }
 
 export default function AnnunciListV2({ annunci, total, isGuest, isAdmin, filtriAttivi, page }: Props) {
@@ -54,7 +50,6 @@ export default function AnnunciListV2({ annunci, total, isGuest, isAdmin, filtri
   const [nuoviAnnunci, setNuoviAnnunci] = useState<AnnuncioConProfilo[]>([])
   const [annunciList, setAnnunciList] = useState(annunci)
 
-  // Carica ultimi annunci (slider top)
   React.useEffect(() => {
     fetch('/api/annunci-v2/ultimi')
       .then(r => r.json())
@@ -75,7 +70,8 @@ export default function AnnunciListV2({ annunci, total, isGuest, isAdmin, filtri
       setNuoviAnnunci(prev => prev.filter(a => a.id !== annId))
     }
   }
-  const limit = 20
+
+  const limit = isGuest ? 10 : 20
   const totalPages = Math.ceil(total / limit)
 
   const goPage = (p: number) => {
@@ -104,12 +100,6 @@ export default function AnnunciListV2({ annunci, total, isGuest, isAdmin, filtri
           { color: '#d97706', label: 'Coach / Staff' },
           { color: '#7c3aed', label: 'Torneo' },
           { color: '#ea580c', label: 'Amichevole' },
-          { color: '#d97706', label: '🤝 Cerca Sponsor' },
-          { color: '#ca8a04', label: '💼 Offre Sponsorizzazione' },
-          { color: '#16a34a', label: '🏋️ Preparatore' },
-          { color: '#ca8a04', label: '🟨 Arbitro' },
-          { color: '#3b82f6', label: '📋 Allenatore' },
-          { color: '#e11d48', label: '🏃 Atletica / Gara' },
         ].map(({ color, label }) => (
           <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <div style={{ width: 12, height: 12, borderRadius: 3, background: color, flexShrink: 0 }} />
@@ -122,7 +112,7 @@ export default function AnnunciListV2({ annunci, total, isGuest, isAdmin, filtri
         <div>
           <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 22, fontWeight: 700, margin: 0 }}>Annunci</h2>
           <p style={{ fontSize: 13, color: '#6b7280', margin: '2px 0 0' }}>
-            {`${total} annunci`}
+            {isGuest ? `Ultimi 10 — registrati per vedere tutti i ${total}` : `${total} annunci`}
           </p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -169,9 +159,19 @@ export default function AnnunciListV2({ annunci, total, isGuest, isAdmin, filtri
         </div>
       )}
 
+      {isGuest && (
+        <div style={{ background: 'linear-gradient(135deg, var(--ms-green) 0%, var(--ms-green-dark) 100%)', borderRadius: 12, padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 12 }}>
+          <div>
+            <p style={{ color: '#fff', fontWeight: 700, margin: 0, fontSize: 15 }}>🎉 Registrazione gratuita</p>
+            <p style={{ color: 'rgba(255,255,255,0.75)', margin: '4px 0 0', fontSize: 13 }}>Vedi tutti gli annunci e contatta direttamente atleti e società.</p>
+          </div>
+          <Link href="/registrazione" style={{ background: 'var(--ms-accent)', color: '#1a1200', padding: '10px 20px', borderRadius: 8, textDecoration: 'none', fontWeight: 800, fontSize: 14, whiteSpace: 'nowrap' }}>
+            Gratis! →
+          </Link>
+        </div>
+      )}
 
-
-      {totalPages > 1 && (
+      {!isGuest && totalPages > 1 && (
         <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 24, alignItems: 'center' }}>
           <button className="btn-ghost" onClick={() => goPage(page - 1)} disabled={page === 1}><ChevronLeft size={16} /></button>
           {[...Array(Math.min(totalPages, 7))].map((_, i) => {
@@ -196,26 +196,14 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
   const isTorneo = ann.tipo === 'torneo' || ann.tipo === 'amichevole'
   const tipoUtente = ann.autore.tipo || 'atleta'
   const tc = getTipoColors(tipoUtente)
-  const aliasVisibile = (ann as any).alias || ann.autore.nomeSocieta || ann.autore.alias || '?'
-  const iniziale = aliasVisibile[0].toUpperCase()
+  const iniziale = (ann.autore.nomeSocieta || ann.autore.alias || '?')[0].toUpperCase()
 
-  // ── Colori bordo per ruolo/tipo ───────────────────────────────────────────
   const getBorderStyle = () => {
-    // Bordo Blu: Società che cerca atleti
     if (ann.tipo === 'cerca_atleti') return { border: '2px solid #2563eb', topBar: 'linear-gradient(90deg, #2563eb, #60a5fa)', glow: '0 0 0 1px #bfdbfe' }
-    // Bordo Verde: Atleta che cerca squadra
     if (ann.tipo === 'ricerca_squadra' || ann.tipo === 'disponibilita') return { border: '2px solid #16a34a', topBar: 'linear-gradient(90deg, #16a34a, #4ade80)', glow: '0 0 0 1px #bbf7d0' }
-    // Bordo Oro: Coach/Preparatore (staff)
     if (tipoUtente === 'staff') return { border: '2px solid #d97706', topBar: 'linear-gradient(90deg, #d97706, #fbbf24)', glow: '0 0 0 1px #fde68a' }
-    // Bordo Viola: Torneo
     if (ann.tipo === 'torneo') return { border: '2px solid #7c3aed', topBar: 'linear-gradient(90deg, #7c3aed, #a78bfa)', glow: '0 0 0 1px #ddd6fe' }
-    // Bordo Arancio: Amichevole
     if (ann.tipo === 'amichevole' || ann.tipo === 'cerca_amichevole' || ann.tipo === 'cerca_torneo') return { border: '2px solid #ea580c', topBar: 'linear-gradient(90deg, #ea580c, #fb923c)', glow: '0 0 0 1px #fed7aa' }
-    // Bordo Oro/Ambra: Sponsor
-    if (ann.tipo === 'gara') return { border: '2px solid #e11d48', topBar: 'linear-gradient(90deg, #e11d48, #fb7185)', glow: '0 0 0 1px #fecdd3' }
-    if (ann.tipo === 'cerca_sponsor') return { border: '2px solid #d97706', topBar: 'linear-gradient(90deg, #d97706, #fbbf24)', glow: '0 0 0 1px #fde68a' }
-    if (ann.tipo === 'offre_sponsorizzazione') return { border: '2px solid #ca8a04', topBar: 'linear-gradient(90deg, #ca8a04, #facc15)', glow: '0 0 0 1px #fef08a' }
-    // Default
     return { border: `2px solid ${tc.border}`, topBar: tc.border, glow: 'none' }
   }
 
@@ -238,7 +226,8 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
       {/* Barra colorata in cima */}
       <div style={{ height: 4, background: bs.topBar, borderRadius: '10px 10px 0 0' }} />
       <div style={{ padding: '12px 14px' }}>
-        {/* Tipo badge + sport */}
+
+        {/* Tipo badge + sport + badge media */}
         <div style={{ display: 'flex', gap: 5, marginBottom: 8, flexWrap: 'wrap' }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 10, textTransform: 'uppercase', letterSpacing: '0.3px', background: tipoConf.bg, color: tipoConf.text }}>
             {tipoConf.icon} {tipoConf.label}
@@ -247,12 +236,14 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
             {SPORT_ICONS[sport as keyof typeof SPORT_ICONS]}
             {SPORT_LABELS[sport] || sport}
           </span>
-
           {ann.categoria?.slice(0, 2).map(c => (
-            <span key={c} style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10, background: '#fef3c7', color: '#92400e' }}>
-              {c}
-            </span>
+            <span key={c} style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 10, background: '#fef3c7', color: '#92400e' }}>{c}</span>
           ))}
+          {ann.mediaGoogleDrive && ann.mediaGoogleDrive.length > 0 && (
+            <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 10, background: '#f3e8ff', color: '#7c3aed' }}>
+              📁 {ann.mediaGoogleDrive.length} file
+            </span>
+          )}
         </div>
 
         {/* Titolo */}
@@ -260,26 +251,20 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
           {ann.titolo}
         </h3>
 
-        {/* Autore con avatar colorato per tipo */}
+        {/* Autore */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 6 }}>
-          <div style={{
-            width: 26, height: 26, borderRadius: tipoUtente === 'societa' ? '6px' : '50%',
-            background: tc.avatar, color: tc.avatarText,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 11, fontWeight: 800, flexShrink: 0,
-            border: `2px solid ${tc.border}`,
-          }}>
+          <div style={{ width: 26, height: 26, borderRadius: tipoUtente === 'societa' ? '6px' : '50%', background: tc.avatar, color: tc.avatarText, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, flexShrink: 0, border: `2px solid ${tc.border}` }}>
             {iniziale}
           </div>
           <div style={{ fontSize: 12, color: '#6b7280', display: 'flex', alignItems: 'center', gap: 4, minWidth: 0 }}>
             <span style={{ fontWeight: 700, color: tc.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {(ann as any).alias || ann.autore.nomeSocieta || ann.autore.alias}
+              {ann.autore.nomeSocieta || ann.autore.alias}
             </span>
             <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 8, background: tc.badge, color: tc.badgeText, fontWeight: 700, textTransform: 'uppercase', flexShrink: 0 }}>
               {TIPO_LABEL[tipoUtente] || tipoUtente}
             </span>
             <span style={{ color: '#d0dde2' }}>·</span>
-            <MapPin size={10} style={{ flexShrink: 0 }} /> 
+            <MapPin size={10} style={{ flexShrink: 0 }} />
             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ann.comune}</span>
           </div>
         </div>
@@ -291,26 +276,48 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
           </p>
         )}
 
-        {/* Info sponsor */}
-        {(ann.tipo === 'cerca_sponsor' || ann.tipo === 'offre_sponsorizzazione') && (
-          <div style={{ background: '#fffbeb', borderRadius: 8, padding: '8px 10px', marginBottom: 8, fontSize: 11, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-            {(ann as any).settore && (
-              <span style={{ padding: '2px 8px', borderRadius: 10, background: '#fef3c7', color: '#92400e', fontWeight: 600 }}>
-                🏢 {(ann as any).settore}
-              </span>
-            )}
-            {(ann as any).budget && (
-              <span style={{ padding: '2px 8px', borderRadius: 10, background: '#fef3c7', color: '#92400e', fontWeight: 600 }}>
-                💰 {({'sotto_500':'< €500','500_2000':'€500-2k','2000_5000':'€2k-5k','5000_10000':'€5k-10k','oltre_10000':'> €10k'} as any)[(ann as any).budget] || (ann as any).budget}
-              </span>
-            )}
-            {((ann as any).benefici || []).slice(0, 3).map((b: string) => (
-              <span key={b} style={{ padding: '2px 8px', borderRadius: 10, background: '#fef9c3', color: '#854d0e', fontWeight: 600 }}>
-                {b}
-              </span>
-            ))}
+        {/* ── Media Google Drive ─────────────────────────────────────────────── */}
+        {ann.mediaGoogleDrive && ann.mediaGoogleDrive.length > 0 && (
+          <div style={{ marginBottom: 10 }}>
+            {ann.mediaGoogleDrive.map((m: any, i: number) => {
+              const id = m.url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)?.[1]
+                || m.url.match(/[?&]id=([a-zA-Z0-9_-]+)/)?.[1]
+              const embedUrl = id ? `https://drive.google.com/file/d/${id}/preview` : m.url
+              const imgUrl   = id ? `https://lh3.googleusercontent.com/d/${id}` : m.url
+              const icona    = m.tipo === 'video' ? '🎬' : m.tipo === 'immagine' ? '🖼️' : '📄'
+              return (
+                <div key={i} style={{ marginBottom: 8, borderRadius: 8, overflow: 'hidden', border: '1px solid #e5e7eb' }}>
+                  {m.titolo && (
+                    <div style={{ padding: '4px 10px', background: '#f3f4f6', fontSize: 11, fontWeight: 600, color: '#374151' }}>
+                      {icona} {m.titolo}
+                    </div>
+                  )}
+                  {m.tipo === 'immagine' ? (
+                    <img
+                      src={imgUrl}
+                      alt={m.titolo || `Immagine ${i + 1}`}
+                      style={{ width: '100%', maxHeight: 200, objectFit: 'cover', display: 'block' }}
+                    />
+                  ) : (
+                    <iframe
+                      src={embedUrl}
+                      style={{ width: '100%', height: m.tipo === 'pdf' ? 300 : 200, border: 'none', display: 'block' }}
+                      allow="autoplay"
+                      title={m.titolo || `Media ${i + 1}`}
+                    />
+                  )}
+                  <div style={{ padding: '3px 10px', background: '#f9fafb', display: 'flex', justifyContent: 'flex-end' }}>
+                    <a href={m.url} target="_blank" rel="noopener noreferrer"
+                      style={{ fontSize: 10, color: '#6b7280', textDecoration: 'none' }}>
+                      ↗ Apri in Google Drive
+                    </a>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         )}
+        {/* ─────────────────────────────────────────────────────────────────── */}
 
         {/* Ruoli */}
         {ann.ruoli.length > 0 && (
@@ -322,7 +329,7 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
           </div>
         )}
 
-        {/* Info chiave: Piede e Altezza */}
+        {/* Piede e Altezza */}
         {((ann as any).piede || (ann as any).altezza) && (
           <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
             {(ann as any).piede && (
@@ -351,36 +358,6 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
           </div>
         )}
 
-        {/* Link Social */}
-        {((ann as any).linkFacebook || (ann as any).linkInstagram || (ann as any).linkYouTube || (ann as any).linkSito) && (
-          <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
-            {(ann as any).linkFacebook && (
-              <a href={(ann as any).linkFacebook} target="_blank" rel="noopener noreferrer"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, padding: '3px 8px', borderRadius: 10, background: '#e7f0fd', color: '#1877f2', border: '1px solid #c3d9f8', textDecoration: 'none', fontWeight: 600 }}>
-                📘 Facebook
-              </a>
-            )}
-            {(ann as any).linkInstagram && (
-              <a href={(ann as any).linkInstagram} target="_blank" rel="noopener noreferrer"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, padding: '3px 8px', borderRadius: 10, background: '#fce4ec', color: '#e1306c', border: '1px solid #f8bbd0', textDecoration: 'none', fontWeight: 600 }}>
-                📸 Instagram
-              </a>
-            )}
-            {(ann as any).linkYouTube && (
-              <a href={(ann as any).linkYouTube} target="_blank" rel="noopener noreferrer"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, padding: '3px 8px', borderRadius: 10, background: '#fde8e8', color: '#ff0000', border: '1px solid #fcc', textDecoration: 'none', fontWeight: 600 }}>
-                ▶️ YouTube
-              </a>
-            )}
-            {(ann as any).linkSito && (
-              <a href={(ann as any).linkSito} target="_blank" rel="noopener noreferrer"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10, padding: '3px 8px', borderRadius: 10, background: '#e8f3f6', color: '#2a6e78', border: '1px solid #b0d4e0', textDecoration: 'none', fontWeight: 600 }}>
-                🌐 Sito web
-              </a>
-            )}
-          </div>
-        )}
-
         {/* Footer */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f0f4f5', paddingTop: 10 }}>
           <span style={{ fontSize: 10, color: '#b0bec5' }}>
@@ -389,7 +366,7 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
           {isGuest ? (
             <Link href="/registrazione" title="Registrati per contattare"
               style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 14px', border: '1.5px solid #d0dde2', borderRadius: 8, background: hovered ? '#f0f7fa' : 'transparent', color: '#4a7c8e', fontSize: 12, textDecoration: 'none', fontWeight: 600, transition: 'all 0.15s' }}>
-              <Lock size={11} /> {hovered ? '🔐 Registrati per contattare' : 'Chat'}
+              <Lock size={11} /> {hovered ? 'Registrati per contattare' : 'Chat'}
             </Link>
           ) : (ann as any).chiuso ? (
             <span style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', border: '1px solid #f0c060', borderRadius: 8, background: '#fef3e2', color: '#c07820', fontSize: 11, fontWeight: 600 }}>
@@ -400,7 +377,7 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
               style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 14px', border: `1.5px solid ${bs.border.split(' ')[2] || tc.border}`, borderRadius: 8, background: hovered ? (bs.topBar.includes('gradient') ? bs.topBar : tc.bg) : 'transparent', color: hovered ? '#fff' : tc.text, fontSize: 12, cursor: 'pointer', fontWeight: 700, transition: 'all 0.15s', fontFamily: 'Barlow, sans-serif' }}
               onMouseEnter={e => { e.currentTarget.style.background = bs.topBar.includes('gradient') ? bs.topBar : tc.bg; e.currentTarget.style.color = '#fff' }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = tc.text }}>
-              <MessageCircle size={13} /> {hovered ? '✉️ Contatta ora' : 'Chat'}
+              <MessageCircle size={13} /> {hovered ? 'Contatta ora' : 'Chat'}
             </button>
           )}
         </div>
