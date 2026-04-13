@@ -1,0 +1,18 @@
+{
+  "name": "Mondo Sport",
+  "short_name": "MondoSport",
+  "description": "Cerca squadre, atleti e tornei sportivi in Italia",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a6b3c",
+  "theme_color": "#1a6b3c",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
