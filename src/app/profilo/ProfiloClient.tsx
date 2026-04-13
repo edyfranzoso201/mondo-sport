@@ -180,7 +180,7 @@ export default function ProfiloClient({ utente, alerts: initialAlerts }: Profilo
 
               {/* Stato annuncio */}
               <div>
-                abel className="ms-label">Il mio stato</label>
+                <label className="ms-label">Il mio stato</label>
                 <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 10px' }}>Controlla se il tuo profilo è visibile agli altri utenti</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {[
