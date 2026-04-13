@@ -2,26 +2,26 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Send, Loader2, Check, Plus, X } from 'lucide-react'
-import { SPORT_LABELS, RUOLI_PER_SPORT, CATEGORIE, REGIONI_ITALIA, REGIONI_ITALIA_SELECT } from '@/types'
+import { ArrowLeft, Send, Loader2, Check } from 'lucide-react'
+import { SPORT_LABELS, RUOLI_PER_SPORT, CATEGORIE, REGIONI_ITALIA_SELECT } from '@/types'
 import type { Sport, TipoAnnuncio } from '@/types'
 
 interface Props { userId: string; userTipo: string }
 
 const TIPI_BASE: { v: TipoAnnuncio; l: string; desc: string; icon: string }[] = [
-  { v: 'ricerca_squadra',       l: 'Cerco squadra',           desc: 'Sei un atleta che vuole trovare una squadra', icon: '🔍' },
-  { v: 'disponibilita',         l: 'Sono disponibile',        desc: 'Offri la tua disponibilità a squadre e società', icon: '✋' },
-  { v: 'cerca_sponsor',         l: 'Cerca Sponsor',           desc: 'Cerchi uno sponsor per la tua attività sportiva', icon: '🤝' },
-  { v: 'offre_sponsorizzazione', l: 'Offre Sponsorizzazione', desc: 'Sei un\'azienda e vuoi sponsorizzare squadre sportive', icon: '💼' },
+  { v: 'ricerca_squadra',        l: 'Cerco squadra',           desc: 'Sei un atleta che vuole trovare una squadra', icon: '🔍' },
+  { v: 'disponibilita',          l: 'Sono disponibile',        desc: 'Offri la tua disponibilità a squadre e società', icon: '✋' },
+  { v: 'cerca_sponsor',          l: 'Cerca Sponsor',           desc: 'Cerchi uno sponsor per la tua attività sportiva', icon: '🤝' },
+  { v: 'offre_sponsorizzazione',  l: 'Offre Sponsorizzazione',  desc: "Sei un'azienda e vuoi sponsorizzare squadre sportive", icon: '💼' },
 ]
 const TIPI_SOCIETA: { v: TipoAnnuncio; l: string; desc: string; icon: string }[] = [
-  { v: 'cerca_atleti',          l: 'Cerco atleti',            desc: 'La società cerca giocatori, allenatori o staff', icon: '🔎' },
-  { v: 'torneo',                l: 'Organizza torneo',        desc: 'Organizzi un torneo e cerchi squadre partecipanti', icon: '🏆' },
-  { v: 'amichevole',            l: 'Organizza amichevole',    desc: 'Cerchi squadre per partite amichevoli', icon: '🤝' },
-  { v: 'cerca_torneo',          l: 'Cerco torneo',            desc: 'Vuoi iscrivere la tua squadra ad un torneo', icon: '🔍' },
-  { v: 'cerca_amichevole',      l: 'Cerco amichevole',        desc: 'Cerchi avversari per partite amichevoli', icon: '🤝' },
-  { v: 'cerca_sponsor',         l: 'Cerca Sponsor',           desc: 'La società cerca uno sponsor commerciale', icon: '🤝' },
-  { v: 'offre_sponsorizzazione', l: 'Offre Sponsorizzazione', desc: 'Sei un\'azienda e vuoi sponsorizzare squadre sportive', icon: '💼' },
+  { v: 'cerca_atleti',           l: 'Cerco atleti',            desc: 'La società cerca giocatori, allenatori o staff', icon: '🔎' },
+  { v: 'torneo',                 l: 'Organizza torneo',        desc: 'Organizzi un torneo e cerchi squadre partecipanti', icon: '🏆' },
+  { v: 'amichevole',             l: 'Organizza amichevole',    desc: 'Cerchi squadre per partite amichevoli', icon: '🤝' },
+  { v: 'cerca_torneo',           l: 'Cerco torneo',            desc: 'Vuoi iscrivere la tua squadra ad un torneo', icon: '🔍' },
+  { v: 'cerca_amichevole',       l: 'Cerco amichevole',        desc: 'Cerchi avversari per partite amichevoli', icon: '🤝' },
+  { v: 'cerca_sponsor',          l: 'Cerca Sponsor',           desc: 'La società cerca uno sponsor commerciale', icon: '🤝' },
+  { v: 'offre_sponsorizzazione',  l: 'Offre Sponsorizzazione',  desc: "Sei un'azienda e vuoi sponsorizzare squadre sportive", icon: '💼' },
 ]
 
 export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
@@ -35,19 +35,24 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
     nSquadreRicercate: '', dataInizio: '', dataFine: '', luogo: '', kmRaggio: '30',
   })
 
+  // ── Stato link Google Drive ──────────────────────────────────────────────
+  const [driveLinks, setDriveLinks] = useState<string[]>([''])
+  const addDriveLink    = () => { if (driveLinks.length < 5) setDriveLinks(p => [...p, '']) }
+  const removeDriveLink = (i: number) => setDriveLinks(p => p.filter((_, idx) => idx !== i))
+  const updateDriveLink = (i: number, val: string) => setDriveLinks(p => p.map((l, idx) => idx === i ? val : l))
+  // ─────────────────────────────────────────────────────────────────────────
+
   const upd = (k: string, v: any) => setForm((f: any) => ({ ...f, [k]: v }))
   const toggleArr = (k: string, v: string) => setForm((f: any) => ({
     ...f, [k]: f[k].includes(v) ? f[k].filter((x: string) => x !== v) : [...f[k], v],
   }))
 
-  const isTorneo = ['torneo', 'amichevole', 'cerca_torneo', 'cerca_amichevole', 'gara'].includes(form.tipo as string)
-  const isProfessione = ['preparatore', 'arbitro', 'allenatore'].includes(form.sport as string)
-  const isCercaEvento = (form.tipo as string) === 'cerca_torneo' || (form.tipo as string) === 'cerca_amichevole'
-  const tipiDisp = userTipo === 'societa' ? TIPI_SOCIETA : TIPI_BASE
+  const isTorneo      = ['torneo', 'amichevole', 'cerca_torneo', 'cerca_amichevole', 'gara'].includes(form.tipo as string)
+  const isCercaEvento = form.tipo === 'cerca_torneo' || form.tipo === 'cerca_amichevole'
+  const tipiDisp      = userTipo === 'societa' ? TIPI_SOCIETA : TIPI_BASE
 
   const salva = async () => {
     if (!form.tipo) { setError('Seleziona il tipo di annuncio'); return }
-    const isSponsor = form.tipo === 'cerca_sponsor' || form.tipo === 'offre_sponsorizzazione'
     if (!form.titolo.trim()) { setError('Il titolo è obbligatorio'); return }
     if (!form.sport) { setError('Seleziona uno sport'); return }
     if (!form.regione) { setError('Seleziona la regione'); return }
@@ -57,7 +62,10 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
     const res = await fetch('/api/annunci-v2', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
+      body: JSON.stringify({
+        ...form,
+        mediaGoogleDrive: driveLinks.filter(l => l.trim().length > 0),
+      }),
     })
     const data = await res.json()
     if (data.success) {
@@ -70,7 +78,6 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
   }
 
   const [ruoliDinamici, setRuoliDinamici] = useState<Record<string, string[]>>(RUOLI_PER_SPORT)
-
   useEffect(() => {
     fetch('/api/ruoli').then(r => r.json()).then(d => { if (d.ruoli) setRuoliDinamici(d.ruoli) }).catch(() => {})
   }, [])
@@ -139,7 +146,7 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
           <span style={{ fontSize: 11, color: '#9ca3af', float: 'right' }}>{form.descrizione.length}/500</span>
         </div>
 
-        {/* Campi specifici per annunci sponsor */}
+        {/* Sponsor */}
         {(form.tipo === 'cerca_sponsor' || form.tipo === 'offre_sponsorizzazione') && (
           <div style={{ background: '#fffbeb', border: '1.5px solid #fde68a', borderRadius: 10, padding: '14px 16px' }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#92400e', marginBottom: 12 }}>
@@ -148,9 +155,7 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
                 <label className="ms-label">Settore merceologico</label>
-                <input type="text" className="ms-input"
-                  value={(form as any).settore || ''} onChange={e => upd('settore', e.target.value)}
-                  placeholder="Es. Abbigliamento, Alimentare, Auto..." />
+                <input type="text" className="ms-input" value={(form as any).settore || ''} onChange={e => upd('settore', e.target.value)} placeholder="Es. Abbigliamento, Alimentare, Auto..." />
               </div>
               <div>
                 <label className="ms-label">Budget indicativo</label>
@@ -169,10 +174,7 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
                 {['Logo su maglia', 'Spazio pubblicitario', 'Materiale sportivo', 'Contributo economico', 'Prodotti/servizi', 'Visibilità social', 'Naming rights'].map(v => (
                   <button key={v} type="button"
-                    onClick={() => {
-                      const curr = (form as any).benefici || []
-                      upd('benefici', curr.includes(v) ? curr.filter((x: string) => x !== v) : [...curr, v])
-                    }}
+                    onClick={() => { const curr = (form as any).benefici || []; upd('benefici', curr.includes(v) ? curr.filter((x: string) => x !== v) : [...curr, v]) }}
                     style={{ padding: '5px 12px', borderRadius: 20, border: `1.5px solid ${((form as any).benefici || []).includes(v) ? '#d97706' : '#d0dde2'}`, background: ((form as any).benefici || []).includes(v) ? '#fff7ed' : '#fff', color: ((form as any).benefici || []).includes(v) ? '#d97706' : '#6b7280', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Barlow, sans-serif' }}>
                     {((form as any).benefici || []).includes(v) ? '✓ ' : ''}{v}
                   </button>
@@ -182,7 +184,7 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
           </div>
         )}
 
-        {/* Piede e Altezza — solo per atleti in sport con piede */}
+        {/* Piede e Altezza calcio */}
         {['ricerca_squadra', 'disponibilita', 'cerca_atleti'].includes(form.tipo as string) &&
          ['calcio', 'calcio5'].includes(form.sport as string) && (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -199,21 +201,17 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
             </div>
             <div>
               <label className="ms-label">Altezza (cm)</label>
-              <input type="number" className="ms-input" min={140} max={220}
-                value={form.altezza || ''} onChange={e => upd('altezza', e.target.value ? Number(e.target.value) : '')}
-                placeholder="Es. 182" />
+              <input type="number" className="ms-input" min={140} max={220} value={form.altezza || ''} onChange={e => upd('altezza', e.target.value ? Number(e.target.value) : '')} placeholder="Es. 182" />
             </div>
           </div>
         )}
 
-        {/* Solo altezza per pallavolo e basket */}
+        {/* Solo altezza pallavolo/basket */}
         {['ricerca_squadra', 'disponibilita', 'cerca_atleti'].includes(form.tipo as string) &&
          ['pallavolo', 'basket'].includes(form.sport as string) && (
           <div style={{ maxWidth: 200 }}>
             <label className="ms-label">Altezza (cm)</label>
-            <input type="number" className="ms-input" min={140} max={220}
-              value={form.altezza || ''} onChange={e => upd('altezza', e.target.value ? Number(e.target.value) : '')}
-              placeholder="Es. 185" />
+            <input type="number" className="ms-input" min={140} max={220} value={form.altezza || ''} onChange={e => upd('altezza', e.target.value ? Number(e.target.value) : '')} placeholder="Es. 185" />
           </div>
         )}
 
@@ -272,14 +270,13 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
             <input className="ms-input" value={form.comune} onChange={e => upd('comune', e.target.value)} placeholder="Es. Torino" />
           </div>
         </div>
-        {/* Campi torneo/amichevole */}
+
+        {/* Torneo/Amichevole */}
         {isTorneo && (
           <div style={{ background: '#f8fbfc', border: '1px solid #d0dde2', borderRadius: 10, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
             <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--ms-green)', margin: 0 }}>
               {({'torneo': '🏆 Dettagli torneo', 'amichevole': '🤝 Dettagli amichevole', 'cerca_torneo': '🔍 Dettagli ricerca torneo', 'cerca_amichevole': '🤝 Dettagli ricerca amichevole'} as Record<string,string>)[form.tipo] || '📋 Dettagli evento'}
             </p>
-
-            {/* Per "cerca torneo/amichevole": solo raggio km */}
             {isCercaEvento && (
               <div>
                 <label className="ms-label">Raggio di ricerca dal tuo comune</label>
@@ -296,91 +293,115 @@ export default function NuovoAnnuncioClient({ userId, userTipo }: Props) {
                 </p>
               </div>
             )}
-
-            {/* Per "organizza torneo/amichevole": dettagli evento */}
             {!isCercaEvento && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
-                <div>
-                  <label className="ms-label" style={{ fontSize: 12 }}>N° squadre ricercate</label>
-                  <input type="number" className="ms-input" min={2} max={64} value={form.nSquadreRicercate}
-                    onChange={e => upd('nSquadreRicercate', e.target.value)} placeholder="Es. 8" />
+              <>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+                  <div>
+                    <label className="ms-label" style={{ fontSize: 12 }}>N° squadre ricercate</label>
+                    <input type="number" className="ms-input" min={2} max={64} value={form.nSquadreRicercate} onChange={e => upd('nSquadreRicercate', e.target.value)} placeholder="Es. 8" />
+                  </div>
+                  <div>
+                    <label className="ms-label" style={{ fontSize: 12 }}>Data inizio</label>
+                    <input type="date" className="ms-input" value={form.dataInizio} onChange={e => upd('dataInizio', e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="ms-label" style={{ fontSize: 12 }}>Data fine</label>
+                    <input type="date" className="ms-input" value={form.dataFine} onChange={e => upd('dataFine', e.target.value)} min={form.dataInizio} />
+                  </div>
                 </div>
                 <div>
-                  <label className="ms-label" style={{ fontSize: 12 }}>Data inizio</label>
-                  <input type="date" className="ms-input" value={form.dataInizio} onChange={e => upd('dataInizio', e.target.value)} />
+                  <label className="ms-label" style={{ fontSize: 12 }}>Sede / Luogo</label>
+                  <input className="ms-input" value={form.luogo} onChange={e => upd('luogo', e.target.value)} placeholder="Es. Palasport Comunale, Via Roma 10, Torino" />
                 </div>
-                <div>
-                  <label className="ms-label" style={{ fontSize: 12 }}>Data fine</label>
-                  <input type="date" className="ms-input" value={form.dataFine} onChange={e => upd('dataFine', e.target.value)} min={form.dataInizio} />
-                </div>
-              </div>
-            )}
-
-            {!isCercaEvento && (
-              <div>
-                <label className="ms-label" style={{ fontSize: 12 }}>Sede / Luogo</label>
-                <input className="ms-input" value={form.luogo} onChange={e => upd('luogo', e.target.value)} placeholder="Es. Palasport Comunale, Via Roma 10, Torino" />
-              </div>
+              </>
             )}
           </div>
         )}
 
-        {/* Azioni */}
+        {/* Scadenza automatica */}
         <div style={{ background: '#f8fbfc', border: '1px solid #d0dde2', borderRadius: 10, padding: '12px 14px' }}>
           <p style={{ fontSize: 12, color: '#4a6470', margin: 0, lineHeight: 1.6 }}>
-            <strong>⏱ Scadenza automatica:</strong><br />
-            • L'annuncio viene eliminato automaticamente dopo <strong>1 anno</strong> dall'ultimo aggiornamento.<br />
-            • Se metti l'annuncio in modalità <strong>"Non disponibile"</strong>, viene eliminato dopo <strong>3 mesi</strong>.<br />
-            • Usa "Porta in cima" per aggiornare la data e rinnovare la scadenza di 1 anno.
+            <strong>Scadenza automatica:</strong><br />
+            L&#39;annuncio viene eliminato automaticamente dopo <strong>1 anno</strong> dall&#39;ultimo aggiornamento.<br />
+            Se metti l&#39;annuncio in modalita <strong>Non disponibile</strong>, viene eliminato dopo <strong>3 mesi</strong>.<br />
+            Usa &quot;Porta in cima&quot; per aggiornare la data e rinnovare la scadenza di 1 anno.
           </p>
         </div>
 
-        {/* Link Social — per admin, società, staff */}
+        {/* ── Media Google Drive ─────────────────────────────────────────── */}
+        <div style={{ background: '#f8f4ff', border: '1.5px solid #d8b4fe', borderRadius: 12, padding: '16px 18px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+            <span style={{ fontSize: 18 }}>📁</span>
+            <div>
+              <span style={{ fontWeight: 700, color: '#6d28d9', fontSize: 14 }}>Video, Foto e PDF da Google Drive</span>
+              <span style={{ fontSize: 12, color: '#9ca3af', marginLeft: 8 }}>(opzionali, max 5)</span>
+            </div>
+          </div>
+          <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 12, lineHeight: 1.5 }}>
+            Carica i file su Google Drive, rendili pubblici con <strong>Chiunque con il link</strong> e incolla il link qui sotto.
+          </p>
+          {driveLinks.map((link, i) => (
+            <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+              <input
+                type="url"
+                placeholder="https://drive.google.com/file/d/..."
+                value={link}
+                onChange={e => updateDriveLink(i, e.target.value)}
+                style={{ flex: 1, padding: '9px 12px', border: '1.5px solid #d8b4fe', borderRadius: 8, fontSize: 13, outline: 'none', background: '#fff', fontFamily: 'Barlow, sans-serif' }}
+              />
+              {driveLinks.length > 1 && (
+                <button type="button" onClick={() => removeDriveLink(i)}
+                  style={{ padding: '8px 12px', background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 700 }}>
+                  ✕
+                </button>
+              )}
+            </div>
+          ))}
+          {driveLinks.length < 5 && (
+            <button type="button" onClick={addDriveLink}
+              style={{ marginTop: 4, padding: '7px 14px', background: '#ede9fe', color: '#6d28d9', border: '1.5px dashed #a78bfa', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, fontFamily: 'Barlow, sans-serif' }}>
+              + Aggiungi altro file
+            </button>
+          )}
+        </div>
+        {/* ──────────────────────────────────────────────────────────────── */}
+
+        {/* Link Social */}
         {['admin', 'societa', 'staff'].includes(userTipo) && (
           <div style={{ background: '#fff', border: '1.5px solid #e8f0f4', borderRadius: 12, padding: '14px 16px' }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#1e3a8a', marginBottom: 12 }}>
-              🔗 Link Social & Media <span style={{ fontSize: 11, fontWeight: 400, color: '#9ca3af' }}>(opzionali)</span>
+              Link Social &amp; Media <span style={{ fontSize: 11, fontWeight: 400, color: '#9ca3af' }}>(opzionali)</span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               <div>
                 <label className="ms-label" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                   <span style={{ fontSize: 14 }}>📘</span> Facebook
                 </label>
-                <input type="url" className="ms-input"
-                  value={form.linkFacebook || ''}
-                  onChange={e => upd('linkFacebook', e.target.value)}
-                  placeholder="https://facebook.com/..." />
+                <input type="url" className="ms-input" value={form.linkFacebook || ''} onChange={e => upd('linkFacebook', e.target.value)} placeholder="https://facebook.com/..." />
               </div>
               <div>
                 <label className="ms-label" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                   <span style={{ fontSize: 14 }}>📸</span> Instagram
                 </label>
-                <input type="url" className="ms-input"
-                  value={form.linkInstagram || ''}
-                  onChange={e => upd('linkInstagram', e.target.value)}
-                  placeholder="https://instagram.com/..." />
+                <input type="url" className="ms-input" value={form.linkInstagram || ''} onChange={e => upd('linkInstagram', e.target.value)} placeholder="https://instagram.com/..." />
               </div>
               <div>
                 <label className="ms-label" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                   <span style={{ fontSize: 14 }}>▶️</span> YouTube
                 </label>
-                <input type="url" className="ms-input"
-                  value={form.linkYouTube || ''}
-                  onChange={e => upd('linkYouTube', e.target.value)}
-                  placeholder="https://youtube.com/..." />
+                <input type="url" className="ms-input" value={form.linkYouTube || ''} onChange={e => upd('linkYouTube', e.target.value)} placeholder="https://youtube.com/..." />
               </div>
               <div>
                 <label className="ms-label" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                   <span style={{ fontSize: 14 }}>🌐</span> Sito web
                 </label>
-                <input type="url" className="ms-input"
-                  value={form.linkSito || ''}
-                  onChange={e => upd('linkSito', e.target.value)}
-                  placeholder="https://www.tuosito.it" />
+                <input type="url" className="ms-input" value={form.linkSito || ''} onChange={e => upd('linkSito', e.target.value)} placeholder="https://www.tuosito.it" />
               </div>
             </div>
           </div>
         )}
+
+        {/* Footer */}
         <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 4 }}>
           <Link href="/" className="btn-ghost" style={{ textDecoration: 'none' }}>Annulla</Link>
           <button className="btn-primary" onClick={salva} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 24px' }}>
