@@ -188,7 +188,7 @@ export default function ProfiloClient({ utente, alerts: initialAlerts }: Profilo
                     { v: 'cerca', l: 'Cerco squadra', desc: 'Visibile, sto cercando attivamente', color: '#2563eb', bg: '#dbeafe' },
                     { v: 'nascosto', l: 'Non visibile', desc: 'Il tuo profilo non compare negli annunci', color: '#6b7280', bg: '#f3f4f6' },
                   ].map(opt => (
-                    <label key={opt.v} style={{
+                    abel key={opt.v} style={{
                       display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px',
                       border: `1.5px solid ${statoAnnuncio === opt.v ? opt.color : '#e5e7eb'}`,
                       borderRadius: 10, cursor: 'pointer',
@@ -207,7 +207,7 @@ export default function ProfiloClient({ utente, alerts: initialAlerts }: Profilo
 
               {/* Descrizione */}
               <div>
-abel className="ms-label">Descrizione annuncio</label>
+                abel className="ms-label">Descrizione annuncio</label>
                 <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 8px' }}>Breve testo visibile sulla tua card (max 140 caratteri)</p>
                 <textarea className="ms-input" rows={3} maxLength={140}
                   style={{ resize: 'none', fontFamily: 'Barlow, sans-serif', fontSize: 13 }}
@@ -218,7 +218,7 @@ abel className="ms-label">Descrizione annuncio</label>
 
               {/* Nascondi ruolo */}
               <div>
-               abel className="ms-label">Visibilità del ruolo</label>
+                abel className="ms-label">Visibilità del ruolo</label>
                 <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 10px' }}>Scegli se mostrare il tuo ruolo nella card</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {
