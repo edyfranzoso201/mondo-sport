@@ -3,13 +3,13 @@ import { auth } from '@/lib/auth'
 import { cercaAnnunciV2, creaAnnuncio, getAnnunciUtente } from '@/lib/db'
 import { v4 as uuidv4 } from 'uuid'
 import type { Annuncio, TipoAnnuncio, Sport } from '@/types'
+import { processaUrlMedia } from '@/lib/videoUtils'
 
 export async function GET(req: NextRequest) {
   const session = await auth()
   const isGuest = !session?.user
   const { searchParams: p } = new URL(req.url)
 
-  // Filtro per userId specifico (usato dal pannello admin)
   const userId = p.get('userId')
   if (userId) {
     const annunci = await getAnnunciUtente(userId)
@@ -41,7 +41,6 @@ export async function POST(req: NextRequest) {
   if (!body.titolo?.trim()) return NextResponse.json({ error: 'Titolo obbligatorio' }, { status: 400 })
   if (!body.tipo) return NextResponse.json({ error: 'Tipo obbligatorio' }, { status: 400 })
 
-  // Admin creating on behalf
   const isAdminCreated = body.isAdminCreated === true
   if (isAdminCreated) {
     const { getUtente } = await import('@/lib/db')
@@ -53,6 +52,19 @@ export async function POST(req: NextRequest) {
   if (!body.sport && !noSportTypes.includes(body.tipo) && !isAdminCreated) {
     return NextResponse.json({ error: 'Sport obbligatorio' }, { status: 400 })
   }
+
+  // ── Media Google Drive ────────────────────────────────────────────────────
+  // I file fisici restano su Google Drive. Su Redis salviamo SOLO i link.
+  let mediaGoogleDrive = undefined
+  if (Array.isArray(body.mediaGoogleDrive) && body.mediaGoogleDrive.length > 0) {
+    if (typeof body.mediaGoogleDrive[0] === 'string') {
+      mediaGoogleDrive = processaUrlMedia(body.mediaGoogleDrive)
+    } else {
+      mediaGoogleDrive = body.mediaGoogleDrive.slice(0, 5)
+    }
+    if (mediaGoogleDrive.length === 0) mediaGoogleDrive = undefined
+  }
+  // ─────────────────────────────────────────────────────────────────────────
 
   const now = new Date().toISOString()
   const ann: any = {
@@ -82,6 +94,7 @@ export async function POST(req: NextRequest) {
     linkInstagram: body.linkInstagram || undefined,
     linkYouTube: body.linkYouTube || undefined,
     linkSito: body.linkSito || undefined,
+    mediaGoogleDrive,
     settore: body.settore || undefined,
     budget: body.budget || undefined,
     benefici: body.benefici || undefined,
