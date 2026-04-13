@@ -278,7 +278,7 @@ export default function ProfiloClient({ utente, alerts: initialAlerts }: Profilo
                   {alert.sport && <span><strong>Sport:</strong> {SPORT_LABELS[alert.sport as keyof typeof SPORT_LABELS] || alert.sport}</span>}
                   {alert.regione && <span><strong>Regione:</strong> {alert.regione}</span>}
                   {alert.comune && <span><strong>Comune:</strong> {alert.comune}</span>}
-                  {alert.tipo && <span><strong>Tipo:</strong> {alert.tipo}</span>}
+
                   {alert.ruolo && <span><strong>Ruolo:</strong> {alert.ruolo}</span>}
                 </div>
                 <button
