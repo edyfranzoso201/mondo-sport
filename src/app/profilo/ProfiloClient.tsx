@@ -151,7 +151,7 @@ export default function ProfiloClient({ utente, alerts: initialAlerts }: Profilo
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
               <div>
-              abel className="ms-label">Il mio stato</label>
+abel className="ms-label">Il mio stato</label>
                 <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 10px' }}>Controlla se il tuo profilo è visibile agli altri utenti</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {[
@@ -171,7 +171,7 @@ export default function ProfiloClient({ utente, alerts: initialAlerts }: Profilo
               </div>
 
               <div>
-                abel className="ms-label">Descrizione annuncio</label>
+ abel className="ms-label">Descrizione annuncio</label>
                 <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 8px' }}>Breve testo visibile sulla tua card — max 140 caratteri</p>
                 <textarea className="ms-input" rows={3} maxLength={140} style={{ resize: 'none', fontFamily: 'Barlow, sans-serif', fontSize: 13 }} value={descrizione} onChange={e => setDescrizione(e.target.value)} placeholder="Es. Centrocampista con 10 anni di esperienza..." />
                 <p style={{ fontSize: 11, color: '#9ca3af', margin: '4px 0 0', textAlign: 'right' }}>{descrizione.length}/140</p>
@@ -198,7 +198,7 @@ export default function ProfiloClient({ utente, alerts: initialAlerts }: Profilo
               </div>
 
               <div>
-                abel className="ms-label">Identità in chat</label>
+ abel className="ms-label">Identità in chat</label>
                 <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 10px' }}>Come appari nelle conversazioni</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {[
@@ -218,7 +218,7 @@ export default function ProfiloClient({ utente, alerts: initialAlerts }: Profilo
               </div>
 
               <div>
-                abel className="ms-label">Notifiche email per nuovi messaggi</label>
+ abel className="ms-label">Notifiche email per nuovi messaggi</label>
                 <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 10px' }}>Ricevi un'email quando qualcuno ti scrive in chat</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {[
