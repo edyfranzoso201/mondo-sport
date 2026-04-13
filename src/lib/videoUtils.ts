@@ -31,3 +31,9 @@ export function processaUrlMedia(urls: string[]): MediaDrive[] {
     .slice(0, 5)
     .map(url => ({ url, tipo: rilevaTipoMedia(url) }))
 }
+// Aggiunta per compatibilità con AdPopup.tsx
+export function getEmbedUrl(url: string): string {
+  const id = estraiIdDrive(url)
+  if (!id) return url
+  return `https://drive.google.com/file/d/${id}/preview`
+}
