@@ -199,4 +199,262 @@ export default function AdminPanel({ pending: initialPending, approved: initialA
                           <button onClick={() => azione(u.id, 'rifiuta')} disabled={loading === u.id}
                             style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
                             <X size={13} /> Rifiuta
-                
+                                                      </button>
+                          <button onClick={() => azione(u.id, 'approva')} disabled={loading === u.id}
+                            style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 14px', background: 'var(--ms-green)', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
+                            <Check size={13} /> Approva
+                          </button>
+                        </>
+                      ) : (
+                        confirmDelete === u.id ? (
+                          <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                            <span style={{ fontSize: 12, color: '#dc2626', fontWeight: 500 }}>Conferma?</span>
+                            <button onClick={() => eliminaUtente(u.id)} disabled={loading === u.id}
+                              style={{ padding: '5px 12px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+                              Sì, elimina
+                            </button>
+                            <button onClick={() => setConfirmDelete(null)}
+                              style={{ padding: '5px 10px', background: 'none', border: '1px solid #e5e7eb', borderRadius: 6, cursor: 'pointer', fontSize: 12, color: '#6b7280' }}>
+                              Annulla
+                            </button>
+                          </div>
+                        ) : (
+                          <button onClick={() => setConfirmDelete(u.id)}
+                            style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: 6, cursor: 'pointer', fontSize: 12 }}>
+                            <Trash2 size={13} /> Elimina
+                          </button>
+                        )
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Expanded details */}
+                  {expanded === u.id && (
+                    <div style={{ borderTop: '1px solid #f3f4f6', padding: '14px', background: '#f9fafb' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 10, marginBottom: 12 }}>
+                        {[
+                          { l: 'Nome completo', v: `${u.nome} ${u.cognome}` },
+                          { l: 'Data nascita', v: u.dataNascita },
+                          { l: 'Codice fiscale', v: u.codiceFiscale },
+                          { l: 'Telefono', v: u.telefono },
+                          { l: 'Sport', v: u.sport.join(', ') },
+                          { l: 'Ruoli', v: u.ruoli.join(', ') },
+                          { l: 'Categorie', v: u.categoria.join(', ') },
+                          { l: 'Email verificata', v: u.emailVerificato ? '✅ Sì' : '❌ No' },
+                          { l: 'Stato account', v: u.stato },
+                          { l: 'ID', v: u.id },
+                        ].map(({ l, v }) => (
+                          <div key={l}>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{l}</div>
+                            <div style={{ fontSize: 12, color: '#374151', marginTop: 2, wordBreak: 'break-all' }}>{v || '—'}</div>
+                          </div>
+                        ))}
+                        {(u as any).descrizione && (
+                          <div style={{ gridColumn: '1 / -1' }}>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Descrizione</div>
+                            <div style={{ fontSize: 12, color: '#374151', marginTop: 2 }}>{(u as any).descrizione}</div>
+                          </div>
+                        )}
+                      </div>
+
+                      {(u as any).genitore && (
+                        <div style={{ marginTop: 8, padding: 12, background: '#fef3c7', borderRadius: 8 }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: '#92400e', marginBottom: 8 }}>
+                            👨‍👦 Dati genitore/tutore
+                          </div>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 8 }}>
+                            {Object.entries((u as any).genitore).map(([k, v]) => (
+                              <div key={k}>
+                                <div style={{ fontSize: 10, fontWeight: 600, color: '#b45309', textTransform: 'uppercase' }}>{k}</div>
+                                <div style={{ fontSize: 12, color: '#374151' }}>{String(v)}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      <AnnunciUtente userId={u.id} />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
+function PuliziaButton() {
+  const [loading, setLoading] = React.useState(false)
+  const [result, setResult] = React.useState<string | null>(null)
+
+  const eseguiPulizia = async () => {
+    if (!confirm('Eliminare tutti gli annunci scaduti?')) return
+    setLoading(true)
+    const res = await fetch('/api/admin/pulizia', { method: 'POST' })
+    const data = await res.json()
+    setResult(`Eliminati ${data.eliminati} annunci`)
+    setLoading(false)
+    setTimeout(() => setResult(null), 4000)
+  }
+
+  return (
+    <button onClick={eseguiPulizia} disabled={loading}
+      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '8px 10px', background: loading ? '#f3f4f6' : '#fef3e2', color: '#c07820', borderRadius: 8, border: '1px solid #f0c060', cursor: loading ? 'default' : 'pointer', fontSize: 12, fontWeight: 600, fontFamily: 'Barlow, sans-serif' }}>
+      <RefreshCw size={12} style={{ animation: loading ? 'spin 0.8s linear infinite' : 'none' }} />
+      {result || (loading ? 'Pulizia...' : '🗑 Pulizia')}
+    </button>
+  )
+}
+
+function AnnunciUtente({ userId }: { userId: string }) {
+  const [annunci, setAnnunci] = React.useState<any[] | null>(null)
+  const [loading, setLoading] = React.useState(false)
+
+  React.useEffect(() => {
+    fetch(`/api/annunci-v2?userId=${userId}&limit=20`)
+      .then(r => r.json())
+      .then(d => setAnnunci(d.annunci || []))
+      .catch(() => setAnnunci([]))
+  }, [userId])
+
+  const elimina = async (annId: string, titolo: string) => {
+    if (!confirm(`Eliminare "${titolo}"?`)) return
+    setLoading(true)
+    await fetch('/api/admin/annunci', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ annId }),
+    })
+    setAnnunci(prev => prev ? prev.filter(a => a.id !== annId) : [])
+    setLoading(false)
+  }
+
+  if (!annunci) return <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 8 }}>Carico annunci...</div>
+  if (annunci.length === 0) return <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 8 }}>Nessun annuncio</div>
+
+  return (
+    <div style={{ marginTop: 12 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>
+        Annunci ({annunci.length})
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {annunci.map(ann => (
+          <div key={ann.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 10px', background: '#f9fafb', borderRadius: 8, border: '1px solid #e5e7eb', gap: 8, flexWrap: 'wrap' }}>
+            <div style={{ minWidth: 0 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{ann.titolo}</span>
+              <span style={{ fontSize: 11, color: '#9ca3af', marginLeft: 6 }}>{ann.tipo} · {ann.sport} · {ann.comune}</span>
+            </div>
+            <button onClick={() => elimina(ann.id, ann.titolo)} disabled={loading}
+              style={{ padding: '4px 10px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: 6, cursor: 'pointer', fontSize: 11, fontFamily: 'Barlow, sans-serif', fontWeight: 600, flexShrink: 0 }}>
+              🗑 Elimina
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ConversazioniPanel() {
+  const [conversazioni, setConversazioni] = React.useState<any[]>([])
+  const [loading, setLoading] = React.useState(true)
+  const [expanded, setExpanded] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    fetch('/api/admin/conversazioni')
+      .then(r => r.json())
+      .then(d => { setConversazioni(d.conversazioni || []); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [])
+
+  const eliminaConv = async (convId: string) => {
+    if (!confirm('Eliminare tutta la conversazione?')) return
+    await fetch('/api/admin/conversazioni', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ convId }),
+    })
+    setConversazioni(prev => prev.filter(c => c.id !== convId))
+  }
+
+  const eliminaMsg = async (convId: string, msgIndex: number) => {
+    if (!confirm('Eliminare questo messaggio?')) return
+    await fetch('/api/admin/conversazioni', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ convId, msgIndex }),
+    })
+    setConversazioni(prev => prev.map(c => {
+      if (c.id !== convId) return c
+      const messaggi = [...c.messaggi]
+      messaggi[msgIndex] = { ...messaggi[msgIndex], testo: '🚫 Messaggio eliminato dall\'amministratore', eliminato: true }
+      return { ...c, messaggi }
+    }))
+  }
+
+  if (loading) return <div style={{ padding: 40, textAlign: 'center', color: '#9ca3af' }}>Carico conversazioni...</div>
+  if (conversazioni.length === 0) return <div style={{ padding: 40, textAlign: 'center', color: '#9ca3af' }}>Nessuna conversazione</div>
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
+      <div style={{ fontSize: 13, color: '#6b7280', marginBottom: 4 }}>{conversazioni.length} conversazioni totali</div>
+      {conversazioni.map(conv => (
+        <div key={conv.id} style={{ background: '#fff', border: '1px solid #d0dde2', borderRadius: 12, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '12px 14px', flexWrap: 'wrap', gap: 8 }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#1e2e34' }}>
+                💬 {conv.partecipanti?.map((p: any) => p.alias).join(' ↔ ')}
+              </div>
+              <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>
+                {conv.messaggi?.length || 0} messaggi · {conv.ultimaAttivita ? new Date(conv.ultimaAttivita).toLocaleDateString('it-IT') : '—'}
+              </div>
+              {conv.ultimoMessaggio && (
+                <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2, fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  "{conv.ultimoMessaggio}"
+                </div>
+              )}
+            </div>
+            <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+              <button onClick={() => setExpanded(expanded === conv.id ? null : conv.id)}
+                style={{ padding: '5px 10px', background: '#f0f7fa', color: '#4a7c8e', border: '1px solid #b0d4e0', borderRadius: 8, cursor: 'pointer', fontSize: 11, fontFamily: 'Barlow, sans-serif' }}>
+                {expanded === conv.id ? 'Chiudi' : 'Vedi'}
+              </button>
+              <button onClick={() => eliminaConv(conv.id)}
+                style={{ padding: '5px 10px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: 8, cursor: 'pointer', fontSize: 11, fontFamily: 'Barlow, sans-serif' }}>
+                🗑
+              </button>
+            </div>
+          </div>
+                      {expanded === conv.id && (
+            <div style={{ borderTop: '1px solid #e5e7eb', padding: '12px 14px', background: '#f9fafb', display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {(conv.messaggi || []).length === 0 ? (
+                <div style={{ fontSize: 12, color: '#9ca3af' }}>Nessun messaggio</div>
+              ) : (
+                [...(conv.messaggi || [])].reverse().map((msg: any, i: number) => {
+                  const realIndex = (conv.messaggi.length - 1) - i
+                  return (
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '8px 10px', background: msg.eliminato ? '#fff0f0' : '#fff', borderRadius: 8, border: `1px solid ${msg.eliminato ? '#fecaca' : '#e5e7eb'}`, gap: 8, flexWrap: 'wrap' }}>
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#4a7c8e' }}>{msg.mittente || 'Utente'}</span>
+                        <span style={{ fontSize: 10, color: '#9ca3af', marginLeft: 8 }}>{msg.timestamp ? new Date(msg.timestamp).toLocaleString('it-IT') : ''}</span>
+                        <div style={{ fontSize: 12, color: msg.eliminato ? '#dc2626' : '#374151', marginTop: 2 }}>{msg.testo}</div>
+                      </div>
+                      {!msg.eliminato && (
+                        <button onClick={() => eliminaMsg(conv.id, realIndex)}
+                          style={{ padding: '3px 8px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: 6, cursor: 'pointer', fontSize: 10, fontFamily: 'Barlow, sans-serif', flexShrink: 0 }}>
+                          🗑
+                        </button>
+                      )}
+                    </div>
+                  )
+                })
+              )}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
