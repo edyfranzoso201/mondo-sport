@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Send, Loader2, Check, Shield } from 'lucide-react'
+import { ArrowLeft, Send, Loader2, Check, Shield, X, Plus } from 'lucide-react'
 import { SPORT_LABELS, SPORT_ICONS, RUOLI_PER_SPORT, CATEGORIE, REGIONI_ITALIA } from '@/types'
 import type { Sport, TipoAnnuncio } from '@/types'
 import { cercaComune } from '@/lib/comuni'
@@ -10,7 +10,7 @@ import { cercaComune } from '@/lib/comuni'
 const TIPI_UTENTE = [
   { v: 'atleta',   l: 'Atleta',                icon: '🏃' },
   { v: 'societa',  l: 'Società Sportiva',       icon: '🏛' },
-  { v: 'staff',    l: 'Staff / Libero Prof.',   icon: '👨‍💼' },
+  { v: 'staff',    l: 'Staff / Libero Prof.',   icon: '👨\u200d💼' },
   { v: 'admin',    l: 'Admin',                  icon: '🛡' },
 ]
 
@@ -27,6 +27,26 @@ const TUTTI_TIPI: { v: TipoAnnuncio; l: string; icon: string }[] = [
   { v: 'gara', l: 'Gara', icon: '🏃' },
 ]
 
+// ── Tipi media Google Drive ───────────────────────────────────────────────────
+interface DriveMedia {
+  url: string
+  tipo: 'video' | 'immagine' | 'pdf'
+  titolo: string
+}
+
+function rilevaTipo(url: string): 'video' | 'immagine' | 'pdf' {
+  const u = url.toLowerCase()
+  if (u.includes('.pdf') || u.includes('pdf')) return 'pdf'
+  if (u.includes('.mp4') || u.includes('.mov') || u.includes('.avi') || u.includes('video')) return 'video'
+  return 'immagine'
+}
+
+function isValidDriveUrl(url: string): boolean {
+  if (!url.trim()) return false
+  return url.includes('drive.google.com') || url.includes('docs.google.com')
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 interface Props { adminId: string }
 
 export default function CreaAnnuncioAdminClient({ adminId }: Props) {
@@ -37,11 +57,9 @@ export default function CreaAnnuncioAdminClient({ adminId }: Props) {
   const [comuneSuggerimenti, setComuneSuggerimenti] = useState<string[]>([])
 
   const [form, setForm] = useState<any>({
-    // Identità fittizia
     tipoUtente: 'societa',
     alias: '',
     nomeSocieta: '',
-    // Annuncio
     tipo: '',
     sport: '',
     titolo: '',
@@ -50,19 +68,49 @@ export default function CreaAnnuncioAdminClient({ adminId }: Props) {
     categoria: [],
     regione: '',
     comune: '',
-    // Torneo
     nSquadreRicercate: '',
     dataInizio: '',
     dataFine: '',
     luogo: '',
-    // Social
     linkFacebook: '',
     linkInstagram: '',
     linkYouTube: '',
     linkSito: '',
-    // Stato
     chiuso: false,
   })
+
+  // ── Stato media Google Drive ──────────────────────────────────────────────
+  const [driveMedia, setDriveMedia] = useState<DriveMedia[]>([
+    { url: '', tipo: 'immagine', titolo: '' }
+  ])
+  const [driveErrors, setDriveErrors] = useState<string[]>([''])
+
+  const addDriveMedia = () => {
+    if (driveMedia.length < 5) {
+      setDriveMedia(p => [...p, { url: '', tipo: 'immagine', titolo: '' }])
+      setDriveErrors(p => [...p, ''])
+    }
+  }
+  const removeDriveMedia = (i: number) => {
+    setDriveMedia(p => p.filter((_, idx) => idx !== i))
+    setDriveErrors(p => p.filter((_, idx) => idx !== i))
+  }
+  const updateDriveMedia = (i: number, field: keyof DriveMedia, val: string) => {
+    setDriveMedia(p => p.map((m, idx) => {
+      if (idx !== i) return m
+      const updated = { ...m, [field]: val }
+      if (field === 'url' && val.trim()) updated.tipo = rilevaTipo(val)
+      return updated
+    }))
+    if (field === 'url') {
+      setDriveErrors(p => p.map((e, idx) => {
+        if (idx !== i) return e
+        if (!val.trim()) return ''
+        return isValidDriveUrl(val) ? '' : 'Inserisci un link Google Drive valido'
+      }))
+    }
+  }
+  // ─────────────────────────────────────────────────────────────────────────
 
   const upd = (k: string, v: any) => setForm((f: any) => ({ ...f, [k]: v }))
   const toggleArr = (k: string, v: string) => setForm((f: any) => ({
@@ -86,13 +134,24 @@ export default function CreaAnnuncioAdminClient({ adminId }: Props) {
     if (!form.comune.trim()) return setError('Inserisci il comune')
     if (!form.alias.trim()) return setError('Inserisci un alias visibile')
 
+    const mediaValidi = driveMedia.filter(m => m.url.trim())
+    const linkInvalidi = mediaValidi.filter(m => !isValidDriveUrl(m.url))
+    if (linkInvalidi.length > 0) {
+      setError('Uno o più link Google Drive non sono validi')
+      return
+    }
+
     setLoading(true); setError('')
     try {
       const payload = {
         ...form,
-        // Usa un userId fittizio con prefisso admin_ così è identificabile
         userId: `admin_${adminId}_${Date.now()}`,
         isAdminCreated: true,
+        mediaGoogleDrive: mediaValidi.map(m => ({
+          url: m.url.trim(),
+          tipo: m.tipo,
+          titolo: m.titolo.trim(),
+        })),
       }
       const res = await fetch('/api/annunci-v2', {
         method: 'POST',
@@ -147,8 +206,6 @@ export default function CreaAnnuncioAdminClient({ adminId }: Props) {
           <div style={{ fontSize: 13, fontWeight: 700, color: '#92400e', marginBottom: 12 }}>
             🎭 Identità dell'annuncio
           </div>
-
-          {/* Tipo utente */}
           <div style={{ marginBottom: 12 }}>
             <label className="ms-label">Tipo utente</label>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -161,7 +218,6 @@ export default function CreaAnnuncioAdminClient({ adminId }: Props) {
               ))}
             </div>
           </div>
-
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div>
               <label className="ms-label">Alias visibile <span className="required">*</span></label>
@@ -190,7 +246,7 @@ export default function CreaAnnuncioAdminClient({ adminId }: Props) {
               <label className="ms-label">Regione <span className="required">*</span></label>
               <select className="ms-select" value={form.regione} onChange={e => upd('regione', e.target.value)}>
                 <option value="">Seleziona regione</option>
-                {REGIONI_ITALIA.filter(r => !r.startsWith('—')).map(r => (
+                {REGIONI_ITALIA.filter((r: string) => !r.startsWith('—')).map((r: string) => (
                   <option key={r} value={r}>{r}</option>
                 ))}
               </select>
@@ -269,7 +325,7 @@ export default function CreaAnnuncioAdminClient({ adminId }: Props) {
           <div>
             <label className="ms-label">Ruoli</label>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              {ruoliDisp.map(r => (
+              {ruoliDisp.map((r: string) => (
                 <button key={r} type="button"
                   onClick={() => toggleArr('ruoli', r)}
                   style={{ padding: '5px 12px', borderRadius: 20, border: `1.5px solid ${form.ruoli.includes(r) ? 'var(--ms-green)' : '#d0dde2'}`, background: form.ruoli.includes(r) ? 'var(--ms-green-light)' : '#fff', color: form.ruoli.includes(r) ? 'var(--ms-green)' : '#6b7280', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Barlow, sans-serif' }}>
@@ -285,7 +341,7 @@ export default function CreaAnnuncioAdminClient({ adminId }: Props) {
           <div>
             <label className="ms-label">Categorie</label>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              {categorieDisp.map(c => (
+              {categorieDisp.map((c: string) => (
                 <button key={c} type="button"
                   onClick={() => toggleArr('categoria', c)}
                   style={{ padding: '5px 12px', borderRadius: 20, border: `1.5px solid ${form.categoria.includes(c) ? '#d97706' : '#d0dde2'}`, background: form.categoria.includes(c) ? '#fffbeb' : '#fff', color: form.categoria.includes(c) ? '#d97706' : '#6b7280', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Barlow, sans-serif' }}>
@@ -322,10 +378,80 @@ export default function CreaAnnuncioAdminClient({ adminId }: Props) {
           </div>
         )}
 
+        {/* ── MEDIA GOOGLE DRIVE ──────────────────────────────── */}
+        <div style={{ background: '#f8f4ff', border: '1.5px solid #d8b4fe', borderRadius: 12, padding: '16px 18px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <span style={{ fontSize: 20 }}>📁</span>
+            <div>
+              <span style={{ fontWeight: 700, color: '#6d28d9', fontSize: 14 }}>Video, Foto e PDF da Google Drive</span>
+              <span style={{ fontSize: 12, color: '#9ca3af', marginLeft: 8 }}>(opzionali, max 5)</span>
+            </div>
+          </div>
+          <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 14, lineHeight: 1.6 }}>
+            Carica i file su Google Drive, aprili e clicca <strong>Condividi → Chiunque con il link</strong>, poi incolla il link qui sotto.
+          </p>
+
+          {driveMedia.map((m, i) => (
+            <div key={i} style={{ marginBottom: 12, background: '#fff', borderRadius: 10, border: '1px solid #e9d5ff', padding: '12px 14px' }}>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                <input
+                  type="url"
+                  placeholder="https://drive.google.com/file/d/..."
+                  value={m.url}
+                  onChange={e => updateDriveMedia(i, 'url', e.target.value)}
+                  style={{ flex: 1, padding: '8px 12px', border: `1.5px solid ${driveErrors[i] ? '#fca5a5' : '#d8b4fe'}`, borderRadius: 8, fontSize: 13, outline: 'none', background: '#faf5ff', fontFamily: 'Barlow, sans-serif' }}
+                />
+                {driveMedia.length > 1 && (
+                  <button type="button" onClick={() => removeDriveMedia(i)}
+                    style={{ padding: '8px 10px', background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+              {driveErrors[i] && (
+                <p style={{ fontSize: 11, color: '#dc2626', margin: '0 0 8px' }}>⚠️ {driveErrors[i]}</p>
+              )}
+              {m.url.trim() && (
+                <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8 }}>
+                  <div>
+                    <label style={{ fontSize: 11, color: '#6b7280', fontWeight: 600, display: 'block', marginBottom: 4 }}>Tipo file</label>
+                    <select
+                      value={m.tipo}
+                      onChange={e => updateDriveMedia(i, 'tipo', e.target.value)}
+                      style={{ width: '100%', padding: '6px 8px', borderRadius: 7, border: '1px solid #d8b4fe', fontSize: 12, background: '#faf5ff', color: '#374151', cursor: 'pointer' }}
+                    >
+                      <option value="immagine">🖼️ Immagine / Foto</option>
+                      <option value="video">🎬 Video</option>
+                      <option value="pdf">📄 PDF</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 11, color: '#6b7280', fontWeight: 600, display: 'block', marginBottom: 4 }}>Titolo (opzionale)</label>
+                    <input
+                      type="text"
+                      placeholder="Es. Video highlights, Brochure società..."
+                      value={m.titolo}
+                      onChange={e => updateDriveMedia(i, 'titolo', e.target.value)}
+                      style={{ width: '100%', padding: '6px 10px', borderRadius: 7, border: '1px solid #d8b4fe', fontSize: 12, background: '#faf5ff', fontFamily: 'Barlow, sans-serif', outline: 'none', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {driveMedia.length < 5 && (
+            <button type="button" onClick={addDriveMedia}
+              style={{ padding: '8px 16px', background: '#ede9fe', color: '#6d28d9', border: '1.5px dashed #a78bfa', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, fontFamily: 'Barlow, sans-serif', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Plus size={14} /> Aggiungi altro file
+            </button>
+          )}
+        </div>
+
         {/* ── LINK SOCIAL ─────────────────────────────────────── */}
         <div style={{ background: '#fff', border: '1.5px solid #e8f0f4', borderRadius: 12, padding: '14px 16px' }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#1e3a8a', marginBottom: 12 }}>
-            🔗 Link Social & Media <span style={{ fontSize: 11, fontWeight: 400, color: '#9ca3af' }}>(opzionali)</span>
+            🔗 Link Social &amp; Media <span style={{ fontSize: 11, fontWeight: 400, color: '#9ca3af' }}>(opzionali)</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             {[
