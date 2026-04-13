@@ -6,7 +6,6 @@ import { MessageCircle, Lock, MapPin, ChevronLeft, ChevronRight, Bell, Plus, Tro
 import type { AnnuncioConProfilo } from '@/types'
 import { getTipoColors, TIPO_LABEL } from '@/lib/tipoColors'
 import { SPORT_LABELS, SPORT_ICONS } from '@/types'
-import type { Sport } from '@/types'
 import ChatModal from '@/components/chat/ChatModal'
 import AlertModal from '@/components/chat/AlertModal'
 
@@ -211,7 +210,9 @@ function estraiIdDrive(url: string): string | null {
   return null
 }
 
-function normalizzaMedia(m: any): { url: string; tipo: string; titolo: string } {
+type MediaItem = { url: string; tipo: string; titolo: string }
+
+function normalizzaMedia(m: any): MediaItem {
   if (typeof m === 'string') return { url: m, tipo: 'video', titolo: '' }
   return { url: m.url || '', tipo: m.tipo || 'video', titolo: m.titolo || '' }
 }
@@ -228,10 +229,10 @@ function AnnuncioCard({ ann, isGuest, onChat, delay }: { ann: AnnuncioConProfilo
   const tc = getTipoColors(tipoUtente)
   const iniziale = (ann.autore.nomeSocieta || ann.autore.alias || '?')[0].toUpperCase()
 
-  const mediaList =
-    Array.isArray((ann as any).mediaGoogleDrive)
-      ? (ann as any).mediaGoogleDrive.map(normalizzaMedia).filter((m: any) => m.url.trim())
-      : []
+const mediaList: MediaItem[] =
+  Array.isArray((ann as any).mediaGoogleDrive)
+    ? (ann as any).mediaGoogleDrive.map(normalizzaMedia).filter((m: MediaItem) => m.url.trim())
+    : []
 
   const getBorderStyle = () => {
     if (ann.tipo === 'cerca_atleti') return { border: '2px solid #2563eb', topBar: 'linear-gradient(90deg, #2563eb, #60a5fa)', glow: '0 0 0 1px #bfdbfe' }
