@@ -324,6 +324,17 @@ export interface SlotAd {
   attivo: boolean
   updatedAt: string
 }
+// ─── Media Google Drive ───────────────────────────────────────────────────────
+// I file fisici (video, foto, PDF) restano su Google Drive dell'utente.
+// Su Redis viene salvato SOLO il link testuale (~100 byte). Zero spazio occupato.
+
+export type TipoMediaDrive = 'video' | 'immagine' | 'pdf'
+
+export interface MediaDrive {
+  url: string
+  tipo: TipoMediaDrive
+  titolo?: string
+}
 
 // ─── Annunci multipli ─────────────────────────────────────────────────────────
 
@@ -341,27 +352,24 @@ export interface Annuncio {
   categoria: string[]
   comune: string
   regione: string
-  kmRaggio?: number        // solo per cerca_torneo / cerca_amichevole
-  // Solo per torneo/amichevole
-  nSquadreRicercate?: number   // quante squadre cercano
-  dataInizio?: string          // YYYY-MM-DD
+  kmRaggio?: number
+  nSquadreRicercate?: number
+  dataInizio?: string
   dataFine?: string
-  luogo?: string               // sede evento
-  // Metadati
+  luogo?: string
   attivo: boolean
-  piede?: 'destro' | 'sinistro' | 'entrambi'  // solo per sport con piede
-  altezza?: number       // cm
-  // Link social/media
+  piede?: 'destro' | 'sinistro' | 'entrambi'
+  altezza?: number
   linkFacebook?: string
   linkInstagram?: string
   linkYouTube?: string
   linkSito?: string
-  chiuso?: boolean      // visibile ma non contattabile via chat
-  chiusoAt?: string     // data in cui è stato messo "non disponibile"
-  scadeAt?: string      // data di scadenza calcolata (ISO)
+  mediaGoogleDrive?: MediaDrive[]
+  chiuso?: boolean
+  chiusoAt?: string
+  scadeAt?: string
   createdAt: string
   updatedAt: string
-  // Per portarlo in cima: aggiornato di recente = sale
   bumpedAt: string
 }
 
